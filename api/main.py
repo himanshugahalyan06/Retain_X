@@ -42,10 +42,18 @@ async def lifespan(app: FastAPI):
     and initializes Predictor models once during startup.
     """
     # 1. Startup initialization
-    Base.metadata.create_all(bind=engine)
-    seed_db()
+    try:
+        Base.metadata.create_all(bind=engine)
+        seed_db()
+    except Exception as e:
+        print(f"Warning: Database startup initialization: {e}")
+
     # Warm up predictor
-    app.state.predictor = get_predictor()
+    try:
+        app.state.predictor = get_predictor()
+    except Exception as e:
+        print(f"Warning: Predictor warmup: {e}")
+
     yield
     # Shutdown cleanups if needed
 
