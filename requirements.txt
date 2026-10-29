@@ -12,6 +12,7 @@ uvicorn[standard]>=0.23.0
 pydantic>=2.0.0
 python-multipart>=0.0.9
 python-dotenv>=1.0.0
+requests>=2.28.0
 
 # Database & Migrations
 sqlalchemy>=2.0.0

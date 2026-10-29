@@ -9,7 +9,10 @@ import os
 import logging
 import threading
 from typing import Dict, Any, Optional
-import requests
+try:
+    import requests
+except ImportError:
+    requests = None
 
 logger = logging.getLogger(__name__)
 
