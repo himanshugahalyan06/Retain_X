@@ -1,3 +1,14 @@
+import os
+import sys
+from pathlib import Path
+
+# Automatically inject repository root and src/ directory into sys.path
+ROOT_DIR = Path(__file__).resolve().parent.parent
+SRC_DIR = ROOT_DIR / "src"
+for path in [str(SRC_DIR), str(ROOT_DIR)]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
