@@ -23,6 +23,9 @@ htmlcov/
 # Databases / Logs
 *.db
 *.log
+.env
+.env.*
+!.env.example
 
 # Node / Frontend
 node_modules/
