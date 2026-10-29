@@ -24,22 +24,29 @@ elif ENV in ("production", "prod") and SECRET_KEY == DEFAULT_INSECURE_SECRET:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "1440")) # 24 hours
 
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import bcrypt
 
 
 def hash_password(password: str) -> str:
     """
-    Hash a plaintext password using bcrypt.
+    Hash a plaintext password using native bcrypt.
+    Safely truncates to 72 bytes to respect bcrypt boundary.
     """
-    return pwd_context.hash(password)
+    pwd_bytes = str(password).encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verify a plaintext password against a stored bcrypt hash.
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        pwd_bytes = str(plain_password).encode("utf-8")[:72]
+        hash_bytes = str(hashed_password).encode("utf-8")
+        return bcrypt.checkpw(pwd_bytes, hash_bytes)
+    except Exception:
+        return False
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
