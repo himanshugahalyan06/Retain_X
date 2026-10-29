@@ -1,27 +1,45 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "vite"
+    },
+    "retainx-api": {
+      "root": ".",
+      "entrypoint": "api/index.py"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/index.py"
+      "destination": {
+        "service": "retainx-api"
+      }
     },
     {
       "source": "/health",
-      "destination": "/api/index.py"
+      "destination": {
+        "service": "retainx-api"
+      }
     },
     {
       "source": "/docs",
-      "destination": "/api/index.py"
+      "destination": {
+        "service": "retainx-api"
+      }
     },
     {
       "source": "/openapi.json",
-      "destination": "/api/index.py"
+      "destination": {
+        "service": "retainx-api"
+      }
     },
     {
-      "source": "/((?!api/|health|docs|openapi.json).*)",
-      "destination": "/index.html"
+      "source": "/(.*)",
+      "destination": {
+        "service": "frontend"
+      }
     }
   ]
 }
