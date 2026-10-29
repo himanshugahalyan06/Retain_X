@@ -53,3 +53,5 @@ catboost_info/
 artifacts/batch_exports/
 artifacts/company_models/
 artifacts/datasets/
+.vercel
+.env*

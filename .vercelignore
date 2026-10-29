@@ -1,0 +1,13 @@
+# Development & testing caches
+.git/
+.github/
+.pytest_cache/
+catboost_info/
+mlruns/
+mlruns.db
+notebooks/
+tests/
+docker/
+docs/
+*.pyc
+__pycache__/
