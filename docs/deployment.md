@@ -1,12 +1,12 @@
-# 🚀 ChurnGuard AI Deployment Guide
+# 🚀 RetainX AI Deployment Guide
 
-This guide provides step-by-step instructions for deploying the **ChurnGuard AI** application in different environments, including containerized environments using Docker and cloud platforms (PaaS).
+This guide provides step-by-step instructions for deploying the **RetainX AI** application in different environments, including containerized environments using Docker and cloud platforms (PaaS).
 
 ---
 
 ## 🏗️ Architecture Overview
 
-ChurnGuard AI consists of three main components:
+RetainX AI consists of three main components:
 1. **Frontend**: A React 19 application built with Vite and Tailwind CSS.
 2. **Backend API**: A FastAPI application serving machine learning predictions, SHAP explainability charts, and performance metrics.
 3. **Database**: SQLAlchemy-based SQLite (fallback/local) or PostgreSQL (production-ready).

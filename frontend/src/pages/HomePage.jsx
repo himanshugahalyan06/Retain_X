@@ -2,448 +2,429 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ShieldAlert, BrainCircuit, BarChart3, Target, ArrowRight,
-  TrendingDown, Zap, Lock, CheckCircle, ChevronRight
+  TrendingDown, Zap, Lock, CheckCircle, ChevronRight, Activity,
+  Users, DollarSign, PieChart, ShieldCheck, Sparkles, Scale, AlertTriangle
 } from 'lucide-react';
 
-const features = [
+const stats = [
+  { value: '94.2%', label: 'Model AUC-ROC', sub: 'Calibrated cost-sensitive ML', color: '#1B4332' },
+  { value: '<50ms', label: 'Inference Latency', sub: 'Real-time FastAPI backend', color: '#2D6A4F' },
+  { value: '3.4×', label: 'Retention Spend ROI', sub: 'vs. uncalibrated baseline', color: '#D4A373' },
+  { value: '100%', label: 'Explainable AI', sub: 'Local & global SHAP drivers', color: '#E07A5F' },
+];
+
+const capabilities = [
   {
     icon: BrainCircuit,
-    title: 'Cost-Sensitive ML',
-    description: 'Trained to minimize real business losses — treating false negatives differently from false positives.',
-    gradFrom: '#6366f1', gradTo: '#818cf8',
-    glow: 'rgba(99,102,241,0.25)',
+    title: 'Cost-Sensitive Machine Learning',
+    description: 'Models trained explicitly with asymmetric loss functions — penalizing false negatives higher to protect high-value customer relationships.',
+    bg: '#F7F4EF',
+    borderColor: 'rgba(45, 106, 79, 0.2)',
   },
   {
     icon: BarChart3,
-    title: 'SHAP Explainability',
-    description: 'Every prediction comes with a detailed breakdown of which attributes contributed most to churn risk.',
-    gradFrom: '#8b5cf6', gradTo: '#a78bfa',
-    glow: 'rgba(139,92,246,0.25)',
+    title: 'SHAP Feature Contribution',
+    description: 'Granular local explainability for every single customer prediction, pinpointing exact contractual, usage, and billing risk drivers.',
+    bg: '#F7F4EF',
+    borderColor: 'rgba(212, 163, 115, 0.25)',
+  },
+  {
+    icon: Scale,
+    title: 'Economic Threshold Tuning',
+    description: 'Dynamic decision threshold calibration that balances intervention incentive costs against customer lifetime value (CLV).',
+    bg: '#F7F4EF',
+    borderColor: 'rgba(82, 183, 136, 0.25)',
   },
   {
     icon: Target,
-    title: 'Optimized Threshold',
-    description: 'Dynamic threshold tuning ensures the right balance between catching at-risk customers and avoiding over-intervention.',
-    gradFrom: '#06b6d4', gradTo: '#67e8f9',
-    glow: 'rgba(6,182,212,0.2)',
+    title: 'Next-Best Action Optimization',
+    description: 'Automated recommendation engine matching individual customer risk profiles to high-ROI retention offers and service upgrades.',
+    bg: '#F7F4EF',
+    borderColor: 'rgba(224, 122, 95, 0.2)',
   },
   {
-    icon: Zap,
-    title: 'Real-Time Inference',
-    description: 'Sub-50ms predictions via a production-grade FastAPI backend, ready for any CRM or customer platform.',
-    gradFrom: '#f59e0b', gradTo: '#fde68a',
-    glow: 'rgba(245,158,11,0.2)',
+    icon: Activity,
+    title: 'Causal Uplift Intelligence',
+    description: 'Separates true persuadables from natural retenders, preventing wasted campaign budgets on customers who would stay anyway.',
+    bg: '#F7F4EF',
+    borderColor: 'rgba(45, 106, 79, 0.2)',
   },
   {
-    icon: Lock,
-    title: 'Fully Explainable',
-    description: 'Interpretable models and feature importance reports so your retention team knows exactly why to intervene.',
-    gradFrom: '#10b981', gradTo: '#6ee7b7',
-    glow: 'rgba(16,185,129,0.2)',
+    icon: ShieldCheck,
+    title: 'Manager-in-the-Loop Audit',
+    description: 'Enterprise decision queue enabling retention managers to approve, override, or audit AI decisions with full governance logging.',
+    bg: '#F7F4EF',
+    borderColor: 'rgba(212, 163, 115, 0.25)',
   },
-  {
-    icon: TrendingDown,
-    title: 'Revenue Protection',
-    description: 'Identify high-value customers at risk weeks before churn event, maximizing retention ROI.',
-    gradFrom: '#f43f5e', gradTo: '#fda4af',
-    glow: 'rgba(244,63,94,0.2)',
-  },
-];
-
-const stats = [
-  { value: '94%', label: 'AUC-ROC Score', sub: 'Production model', color: '#a78bfa' },
-  { value: '<50ms', label: 'Avg Latency', sub: 'Per prediction', color: '#67e8f9' },
-  { value: '3×', label: 'Cost Reduction', sub: 'vs. baseline model', color: '#6ee7b7' },
-  { value: '19', label: 'Feature Signals', sub: 'Customer attributes', color: '#fde68a' },
 ];
 
 const steps = [
-  { num: '01', title: 'Enter Customer Data', desc: 'Fill in the customer profile — demographics, services, billing info — via our guided form.' },
-  { num: '02', title: 'Get Risk Score', desc: 'Our cost-sensitive model scores churn probability in milliseconds, with a calibrated threshold.' },
-  { num: '03', title: 'Understand Why', desc: 'View SHAP-driven explanations showing which features drove the prediction up or down.' },
-  { num: '04', title: 'Take Action', desc: "Use the insight to target retention campaigns where they'll have maximum impact." },
+  { num: '01', title: 'Data Ingestion', desc: 'Demographic, subscription, and billing signals are processed through enterprise feature pipelines.' },
+  { num: '02', title: 'Risk Scoring', desc: 'Cost-sensitive ML models calculate calibrated churn probability and risk tier classification.' },
+  { num: '03', title: 'SHAP Analysis', desc: 'Local feature attribution extracts positive and negative risk factors for full explainability.' },
+  { num: '04', title: 'Retention Action', desc: 'Expected economic net value calculation identifies high-priority intervention opportunities.' },
 ];
-
-function StatCard({ value, label, sub, delay, color }) {
-  return (
-    <div
-      className="card p-6 text-center animate-fade-in-up"
-      style={{ animationDelay: delay, opacity: 0, animationFillMode: 'forwards', position: 'relative', overflow: 'hidden' }}
-    >
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: `radial-gradient(ellipse at 50% 0%, ${color}15 0%, transparent 70%)`,
-        pointerEvents: 'none',
-      }} />
-      <div style={{ fontSize: 36, fontWeight: 900, color, lineHeight: 1, marginBottom: 6 }}>{value}</div>
-      <div style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0' }}>{label}</div>
-      <div style={{ fontSize: 11, color: '#64748b', marginTop: 3 }}>{sub}</div>
-    </div>
-  );
-}
 
 export default function HomePage() {
   useEffect(() => {
-    document.title = 'ChurnGuard AI — Cost-Sensitive Customer Churn Prediction';
+    document.title = 'RetainX — Enterprise AI Decision Intelligence';
   }, []);
 
   return (
     <div style={{ overflowX: 'hidden' }}>
 
-      {/* ─── HERO ─────────────────────────────────────────────────── */}
+      {/* ─── HERO SECTION ─────────────────────────────────────────── */}
       <section style={{
         position: 'relative',
-        minHeight: '92vh',
-        display: 'flex',
-        alignItems: 'center',
-        overflow: 'hidden',
-        background: `linear-gradient(135deg, rgba(6,4,15,0.85) 0%, rgba(13,9,32,0.85) 40%, rgba(8,15,36,0.9) 100%), url('/telecom_bg.png') center/cover no-repeat`,
+        padding: '72px 0 88px',
+        background: '#F7F4EF',
+        borderBottom: '1px solid rgba(27, 67, 50, 0.08)',
       }}>
-        {/* Orbs */}
-        <div className="orb orb-1" />
-        <div className="orb orb-2" />
-        <div className="orb orb-3" />
-        {/* Dot grid */}
-        <div className="dot-grid absolute inset-0 pointer-events-none" style={{ opacity: 0.6 }} />
-        <div className="noise-overlay" />
+        {/* Subtle analytical radial glow */}
+        <div style={{
+          position: 'absolute', top: 0, left: '20%', width: 500, height: 400,
+          background: 'radial-gradient(circle, rgba(82,183,136,0.08), transparent 70%)',
+          pointerEvents: 'none'
+        }} />
 
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '80px 24px', width: '100%', position: 'relative' }}>
-          <div style={{ maxWidth: 680 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 32, alignItems: 'center' }}>
+            
+            {/* Left Content */}
+            <div style={{ gridColumn: 'span 12', '@media (min-width: 1024px)': { gridColumn: 'span 7' } }} className="lg:col-span-7">
+              {/* Product Badge */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '6px 14px', borderRadius: 9999,
+                background: '#D8F3DC', border: '1px solid rgba(45,106,79,0.3)',
+                color: '#1B4332', fontSize: 12, fontWeight: 800,
+                marginBottom: 24, letterSpacing: '0.04em'
+              }}>
+                <Sparkles style={{ width: 14, height: 14, color: '#2D6A4F' }} />
+                DECISION INTELLIGENCE PLATFORM
+              </div>
 
-            {/* Badge */}
-            <div
-              className="animate-fade-in-up badge badge-violet"
-              style={{ marginBottom: 28, opacity: 0, animationFillMode: 'forwards' }}
-            >
-              <span style={{
-                width: 7, height: 7, borderRadius: '50%',
-                background: '#8b5cf6',
-                boxShadow: '0 0 8px #8b5cf6',
-                display: 'inline-block',
-                animation: 'pulse-ring 2s infinite',
-              }} />
-              ML-Powered Retention Intelligence
+              {/* Main Headline */}
+              <h1 style={{
+                fontSize: 'clamp(40px, 5.5vw, 60px)',
+                fontWeight: 900,
+                lineHeight: 1.08,
+                letterSpacing: '-0.03em',
+                marginBottom: 20,
+                color: '#0F172A',
+              }}>
+                Turn Churn Risk Into{' '}
+                <span style={{ color: '#2D6A4F' }}>Retention Decisions.</span>
+              </h1>
+
+              {/* Concise Explanation */}
+              <p style={{
+                fontSize: 17, lineHeight: 1.65,
+                color: '#334155',
+                marginBottom: 32,
+                maxWidth: 580,
+                fontWeight: 500,
+              }}>
+                RetainX combines cost-sensitive machine learning, explainable AI, and business economics to identify customers worth saving — optimizing retention budget for maximum net revenue impact.
+              </p>
+
+              {/* CTAs */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginBottom: 36 }}>
+                <Link to="/predict" className="btn-primary" style={{ fontSize: 15, padding: '13px 28px' }}>
+                  Run Prediction
+                  <ArrowRight style={{ width: 16, height: 16 }} />
+                </Link>
+                <Link to="/dashboard" className="btn-secondary" style={{ fontSize: 15, padding: '13px 28px' }}>
+                  Explore Analytics
+                  <BarChart3 style={{ width: 16, height: 16 }} />
+                </Link>
+              </div>
+
+              {/* Trust badges */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+                {['Cost-Sensitive Loss Tuning', 'SHAP Explainability', 'Manager Audit Workflow'].map((tag) => (
+                  <span
+                    key={tag}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      fontSize: 12, fontWeight: 700,
+                      color: '#334155',
+                      background: '#FFFFFF',
+                      border: '1px solid rgba(27,67,50,0.12)',
+                      padding: '5px 12px', borderRadius: 9999,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                    }}
+                  >
+                    <CheckCircle style={{ width: 13, height: 13, color: '#2D6A4F' }} />
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            {/* Headline */}
-            <h1
-              className="animate-fade-in-up delay-100"
-              style={{
-                fontSize: 'clamp(42px, 7vw, 80px)',
-                fontWeight: 900,
-                lineHeight: 1.04,
-                letterSpacing: '-0.03em',
-                marginBottom: 22,
-                opacity: 0,
-                animationFillMode: 'forwards',
-                color: '#f1f5f9',
-              }}
-            >
-              Stop Churn{' '}
-              <span className="gradient-text">Before</span>
-              {' '}It Happens
-            </h1>
+            {/* Right Side - Abstract "Risk Intelligence" Preview Component */}
+            <div style={{ gridColumn: 'span 12' }} className="lg:col-span-5">
+              <div className="card" style={{
+                padding: 24,
+                background: '#FFFFFF',
+                borderRadius: 22,
+                border: '1px solid rgba(27,67,50,0.15)',
+                boxShadow: '0 12px 40px rgba(15,23,42,0.06)',
+                position: 'relative'
+              }}>
+                {/* Header preview bar */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, borderBottom: '1px solid #F0EBDD', paddingBottom: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#E07A5F' }} />
+                    <span style={{ fontSize: 12, fontWeight: 800, color: '#0F172A', letterSpacing: '0.04em' }}>CUSTOMER RISK ASSESSMENT</span>
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#2D6A4F', background: '#D8F3DC', padding: '3px 10px', borderRadius: 9999, border: '1px solid rgba(45,106,79,0.2)' }}>
+                    LIVE SIGNAL
+                  </span>
+                </div>
 
-            {/* Subheadline */}
-            <p
-              className="animate-fade-in-up delay-200"
-              style={{
-                fontSize: 18, lineHeight: 1.7,
-                color: '#94a3b8',
-                marginBottom: 36,
-                maxWidth: 560,
-                opacity: 0,
-                animationFillMode: 'forwards',
-              }}
-            >
-              ChurnGuard AI is a cost-sensitive churn prediction system that identifies at-risk customers with SHAP explainability — so your retention team knows <em style={{ color: '#c4b5fd' }}>who</em> to save and <em style={{ color: '#67e8f9' }}>why</em>.
+                {/* Nodes & Topology Abstract Preview */}
+                <div style={{
+                  background: '#F7F4EF',
+                  borderRadius: 14,
+                  padding: 16,
+                  marginBottom: 16,
+                  border: '1px solid rgba(212,163,115,0.25)',
+                  position: 'relative'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Customer Node #7829</div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: '#0F172A' }}>Enterprise Telecom Account</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 20, fontWeight: 900, color: '#E07A5F' }}>78.4%</div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#E07A5F', textTransform: 'uppercase' }}>HIGH CHURN RISK</div>
+                    </div>
+                  </div>
+
+                  {/* Progress probability bar */}
+                  <div style={{ height: 8, background: '#E2E8F0', borderRadius: 9999, overflow: 'hidden', marginBottom: 14 }}>
+                    <div style={{ height: '100%', width: '78.4%', background: 'linear-gradient(90deg, #D4A373, #E07A5F)', borderRadius: 9999 }} />
+                  </div>
+
+                  {/* Node Network Topology visual */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFFFF', padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(27,67,50,0.08)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: '#334155' }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2D6A4F' }} />
+                      Signal Flow: Demographics → Usage → Billing
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: '#1B4332' }}>CLV: ₹72,400</span>
+                  </div>
+                </div>
+
+                {/* SHAP Drivers preview */}
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+                    SHAP Risk Contributions
+                  </div>
+                  {[
+                    { label: 'Month-to-month Contract', val: '+0.34', pos: true },
+                    { label: 'No Tech Support Add-on', val: '+0.21', pos: true },
+                    { label: 'High Monthly Charges ($105)', val: '+0.18', pos: true },
+                    { label: 'Tenure Length (48 mos)', val: '-0.16', pos: false },
+                  ].map((item) => (
+                    <div key={item.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, fontSize: 12 }}>
+                      <span style={{ color: '#334155', fontWeight: 600 }}>{item.label}</span>
+                      <span style={{
+                        fontWeight: 800,
+                        color: item.pos ? '#E07A5F' : '#2D6A4F',
+                        background: item.pos ? 'rgba(224,122,95,0.1)' : '#D8F3DC',
+                        padding: '2px 8px', borderRadius: 6
+                      }}>
+                        {item.val}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Retention Action summary */}
+                <div style={{
+                  background: '#D8F3DC',
+                  borderRadius: 12,
+                  padding: '12px 16px',
+                  border: '1px solid rgba(45,106,79,0.3)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 800, color: '#1B4332', textTransform: 'uppercase' }}>RECOMMENDED INTERVENTION</div>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#0F172A' }}>1-Yr Contract Renewal Discount (15%)</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: 13, fontWeight: 900, color: '#1B4332' }}>+₹18,200 EV</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#2D6A4F' }}>420% ROI</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ─── BUSINESS IMPACT METRICS ───────────────────────────────── */}
+      <section style={{ padding: '48px 0', background: '#F0EBDD', borderBottom: '1px solid rgba(27,67,50,0.08)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
+            {stats.map((s) => (
+              <div key={s.label} className="card" style={{ padding: 24, textAlign: 'center', background: '#FFFFFF' }}>
+                <div style={{ fontSize: 36, fontWeight: 900, color: s.color, lineHeight: 1, marginBottom: 8 }}>{s.value}</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>{s.label}</div>
+                <div style={{ fontSize: 12, color: '#64748B', marginTop: 4, fontWeight: 500 }}>{s.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CORE CAPABILITIES ─────────────────────────────────────── */}
+      <section style={{ padding: '80px 0', background: '#F7F4EF' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 9999, background: '#D8F3DC', color: '#1B4332', fontSize: 12, fontWeight: 800, marginBottom: 12 }}>
+              CORE PLATFORM CAPABILITIES
+            </div>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>
+              Built for Enterprise Decision Intelligence
+            </h2>
+            <p style={{ color: '#475569', maxWidth: 540, margin: '0 auto', fontSize: 15, fontWeight: 500 }}>
+              Going beyond traditional black-box churn scoring by linking predictions directly to economic ROI and retention workflows.
             </p>
+          </div>
 
-            {/* CTAs */}
-            <div
-              className="animate-fade-in-up delay-300"
-              style={{ display: 'flex', flexWrap: 'wrap', gap: 14, opacity: 0, animationFillMode: 'forwards' }}
-            >
-              <Link to="/predict" className="btn-primary" style={{ fontSize: 15, padding: '14px 32px' }}>
-                Try a Prediction
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+            {capabilities.map((c) => (
+              <div key={c.title} className="card" style={{ padding: 28, background: c.bg, border: `1px solid ${c.borderColor}` }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12,
+                  background: 'linear-gradient(135deg, #1B4332, #2D6A4F)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: 18, boxShadow: '0 4px 12px rgba(27,67,50,0.2)'
+                }}>
+                  <c.icon style={{ width: 22, height: 22, color: 'white' }} />
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>{c.title}</h3>
+                <p style={{ fontSize: 14, color: '#334155', lineHeight: 1.6, margin: 0 }}>{c.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── HOW THE INTELLIGENCE PIPELINE WORKS ───────────────────── */}
+      <section style={{ padding: '80px 0', background: '#F0EBDD', borderTop: '1px solid rgba(27,67,50,0.08)', borderBottom: '1px solid rgba(27,67,50,0.08)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 9999, background: '#FAEDCD', color: '#78350F', fontSize: 12, fontWeight: 800, marginBottom: 12 }}>
+              INTELLIGENCE PIPELINE
+            </div>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>
+              From Data Signals to Retention Value
+            </h2>
+            <p style={{ color: '#475569', maxWidth: 520, margin: '0 auto', fontSize: 15 }}>
+              CUSTOMERS → SIGNALS → RISK → DECISION → RETENTION
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
+            {steps.map((s) => (
+              <div key={s.num} className="card" style={{ padding: 28, background: '#FFFFFF', height: '100%' }}>
+                <div style={{ fontSize: 36, fontWeight: 900, color: '#2D6A4F', lineHeight: 1, marginBottom: 14 }}>{s.num}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>{s.title}</h3>
+                <p style={{ fontSize: 13.5, color: '#334155', lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── EXPLAINABILITY & SHAP SECTION ─────────────────────────── */}
+      <section style={{ padding: '80px 0', background: '#F7F4EF' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 36, alignItems: 'center' }}>
+            <div style={{ gridColumn: 'span 12' }} className="lg:col-span-6">
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 9999, background: '#D8F3DC', color: '#1B4332', fontSize: 12, fontWeight: 800, marginBottom: 14 }}>
+                EXPLAINABLE AI ARCHITECTURE
+              </div>
+              <h2 style={{ fontSize: 'clamp(28px, 4vw, 38px)', fontWeight: 900, color: '#0F172A', marginBottom: 16, lineHeight: 1.15 }}>
+                Understand Exactly WHY Each Customer is At Risk
+              </h2>
+              <p style={{ fontSize: 15, color: '#334155', lineHeight: 1.65, marginBottom: 20 }}>
+                Traditional black-box machine learning models fail retention teams because they predict risk without explanation. RetainX computes exact SHAP feature contributions for every evaluation.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <CheckCircle style={{ width: 18, height: 18, color: '#2D6A4F', flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 14, color: '#0F172A', fontWeight: 600 }}>Identify contract vs service vs billing risk factors in real time.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <CheckCircle style={{ width: 18, height: 18, color: '#2D6A4F', flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 14, color: '#0F172A', fontWeight: 600 }}>Highlight protective tenure factors that balance out churn probability.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <CheckCircle style={{ width: 18, height: 18, color: '#2D6A4F', flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 14, color: '#0F172A', fontWeight: 600 }}>Provide retention agents with clear talking points for customer calls.</span>
+                </div>
+              </div>
+              <Link to="/predict" className="btn-primary">
+                Test SHAP Explanation Tool
                 <ArrowRight style={{ width: 16, height: 16 }} />
               </Link>
-              <Link to="/dashboard" className="btn-secondary" style={{ fontSize: 15, padding: '14px 32px' }}>
-                View Dashboard
-                <BarChart3 style={{ width: 16, height: 16 }} />
-              </Link>
             </div>
 
-            {/* Tags */}
-            <div
-              className="animate-fade-in-up delay-400"
-              style={{
-                display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 36,
-                opacity: 0, animationFillMode: 'forwards',
-              }}
-            >
-              {['Cost-Optimized Threshold', 'SHAP Explainability', 'FastAPI Backend', 'React + Vite'].map((tag) => (
-                <span
-                  key={tag}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
-                    fontSize: 12, fontWeight: 600,
-                    color: '#94a3b8',
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    padding: '6px 14px', borderRadius: 9999,
-                    backdropFilter: 'blur(8px)',
-                  }}
-                >
-                  <CheckCircle style={{ width: 12, height: 12, color: '#6ee7b7' }} />
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Hero floating card */}
-          <div
-            className="animate-fade-in delay-500 animate-float hidden xl:flex"
-            style={{ position: 'absolute', right: 40, top: 0, bottom: 0, alignItems: 'center', opacity: 0, animationFillMode: 'forwards' }}
-          >
-            <div className="card" style={{ padding: 24, width: 290, boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.15)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <div style={{
-                  width: 34, height: 34, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #f43f5e, #dc2626)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 0 16px rgba(244,63,94,0.5)',
-                }}>
-                  <ShieldAlert style={{ width: 16, height: 16, color: 'white' }} />
+            <div style={{ gridColumn: 'span 12' }} className="lg:col-span-6">
+              <div className="card" style={{ padding: 28, background: '#FFFFFF' }}>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', marginBottom: 16 }}>
+                  SHAP Contribution Visualizer
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {[
+                    { feature: 'Contract: Month-to-month', val: '+0.38', color: '#E07A5F', pct: '85%' },
+                    { feature: 'Internet: Fiber optic', val: '+0.24', color: '#E07A5F', pct: '60%' },
+                    { feature: 'TechSupport: No', val: '+0.19', color: '#E07A5F', pct: '48%' },
+                    { feature: 'Tenure: 48 months', val: '-0.15', color: '#2D6A4F', pct: '38%' },
+                    { feature: 'Payment: Auto-bank', val: '-0.09', color: '#2D6A4F', pct: '22%' },
+                  ].map((f) => (
+                    <div key={f.feature}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
+                        <span style={{ color: '#334155' }}>{f.feature}</span>
+                        <span style={{ color: f.color, fontWeight: 800 }}>{f.val}</span>
+                      </div>
+                      <div style={{ height: 7, background: '#F0EBDD', borderRadius: 9999, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: f.pct, background: f.color, borderRadius: 9999 }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#f1f5f9' }}>High Churn Risk</div>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>Customer #2847</div>
-                </div>
-                <span style={{
-                  marginLeft: 'auto', fontSize: 12, fontWeight: 800,
-                  padding: '3px 9px', borderRadius: 20,
-                  color: '#fda4af', background: 'rgba(244,63,94,0.12)', border: '1px solid rgba(244,63,94,0.25)',
-                }}>84.2%</span>
-              </div>
-
-              <div style={{ height: 6, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', marginBottom: 16, overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%', width: '84%',
-                  background: 'linear-gradient(90deg, #fbbf24, #f97316, #ef4444)',
-                  borderRadius: 9999,
-                }} />
-              </div>
-
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Top Risk Drivers</div>
-              {[
-                { label: 'Month-to-month Contract', val: 0.38, pos: true },
-                { label: 'No Online Security', val: 0.22, pos: true },
-                { label: 'High Monthly Charges', val: 0.18, pos: true },
-                { label: 'Long Tenure', val: 0.14, pos: false },
-              ].map((d) => (
-                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
-                  <div style={{ fontSize: 10, color: '#94a3b8', width: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.label}</div>
-                  <div style={{ flex: 1, height: 5, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${d.val * 100}%`, background: d.pos ? '#f43f5e' : '#10b981', borderRadius: 9999 }} />
-                  </div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: d.pos ? '#fda4af' : '#6ee7b7', minWidth: 36 }}>
-                    {d.pos ? '+' : '-'}{d.val.toFixed(2)}
-                  </div>
-                </div>
-              ))}
-              <div style={{
-                marginTop: 14, paddingTop: 12,
-                borderTop: '1px solid rgba(255,255,255,0.07)',
-                fontSize: 10, color: '#475569',
-                display: 'flex', alignItems: 'center', gap: 5,
-              }}>
-                <Zap style={{ width: 11, height: 11, color: '#8b5cf6' }} />
-                Generated in 32ms · Cost-optimized threshold
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── STATS ──────────────────────────────────────────────────── */}
-      <section style={{
-        padding: '60px 0',
-        background: 'rgba(255,255,255,0.02)',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-      }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
-            {stats.map((s, i) => (
-              <StatCard key={s.label} {...s} delay={`${i * 0.1}s`} />
-            ))}
+      {/* ─── RETENTION DECISION SECTION ────────────────────────────── */}
+      <section style={{ padding: '80px 0', background: '#F0EBDD', borderTop: '1px solid rgba(27,67,50,0.08)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 9999, background: '#D8F3DC', color: '#1B4332', fontSize: 12, fontWeight: 800, marginBottom: 14 }}>
+            ECONOMIC DECISION WORKSPACE
           </div>
-        </div>
-      </section>
-
-      {/* ─── FEATURES ───────────────────────────────────────────────── */}
-      <section style={{ padding: '96px 0', background: 'transparent' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 60 }}>
-            <div className="badge badge-violet" style={{ marginBottom: 16 }}>
-              <BrainCircuit style={{ width: 13, height: 13 }} />
-              Intelligent by Design
-            </div>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 14, color: '#f1f5f9' }}>
-              Why ChurnGuard?
-            </h2>
-            <p style={{ color: '#64748b', maxWidth: 480, margin: '0 auto', fontSize: 15 }}>
-              Built to go beyond prediction accuracy — designed to drive real retention outcomes.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
-            {features.map((f, i) => (
-              <div
-                key={f.title}
-                className="card animate-fade-in-up"
-                style={{
-                  padding: 28,
-                  animationDelay: `${i * 0.08}s`,
-                  opacity: 0,
-                  animationFillMode: 'forwards',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  cursor: 'default',
-                }}
-              >
-                {/* Glow blob */}
-                <div style={{
-                  position: 'absolute', top: -30, right: -30,
-                  width: 120, height: 120,
-                  background: `radial-gradient(circle, ${f.glow}, transparent 70%)`,
-                  filter: 'blur(20px)',
-                  pointerEvents: 'none',
-                }} />
-                <div style={{
-                  width: 44, height: 44, borderRadius: 14,
-                  background: `linear-gradient(135deg, ${f.gradFrom}, ${f.gradTo})`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 16,
-                  boxShadow: `0 6px 20px ${f.glow}`,
-                }}>
-                  <f.icon style={{ width: 20, height: 20, color: 'white' }} />
-                </div>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>{f.title}</h3>
-                <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.7 }}>{f.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── HOW IT WORKS ───────────────────────────────────────────── */}
-      <section style={{
-        padding: '96px 0',
-        background: 'rgba(255,255,255,0.015)',
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-      }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 60 }}>
-            <div className="badge badge-cyan" style={{ marginBottom: 16 }}>
-              <Zap style={{ width: 13, height: 13 }} />
-              Simple Workflow
-            </div>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 14, color: '#f1f5f9' }}>
-              How It Works
-            </h2>
-            <p style={{ color: '#64748b', maxWidth: 440, margin: '0 auto', fontSize: 15 }}>
-              From customer data to actionable insight in four simple steps.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
-            {steps.map((s, i) => (
-              <div key={s.num} style={{ position: 'relative' }}>
-                <div className="card" style={{ padding: 28, height: '100%' }}>
-                  <div style={{
-                    fontSize: 48, fontWeight: 900,
-                    background: 'linear-gradient(135deg,#a78bfa,#67e8f9)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    opacity: 0.18,
-                    lineHeight: 1,
-                    marginBottom: 12,
-                  }}>{s.num}</div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>{s.title}</h3>
-                  <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.65 }}>{s.desc}</p>
-                </div>
-                {i < steps.length - 1 && (
-                  <div style={{
-                    position: 'absolute', right: -12, top: '50%',
-                    transform: 'translateY(-50%)', zIndex: 10,
-                    display: 'none',
-                  }} className="hidden lg:flex">
-                    <ChevronRight style={{ width: 22, height: 22, color: '#334155' }} />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CTA BANNER ─────────────────────────────────────────────── */}
-      <section style={{
-        padding: '100px 0',
-        position: 'relative',
-        overflow: 'hidden',
-        background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #1e1b4b 100%)',
-        borderTop: '1px solid rgba(139,92,246,0.2)',
-      }}>
-        <div className="dot-grid absolute inset-0 pointer-events-none" style={{ opacity: 0.8 }} />
-        <div style={{
-          position: 'absolute', width: 600, height: 600, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(139,92,246,0.25), transparent)',
-          top: -250, right: -100, filter: 'blur(80px)', pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', width: 400, height: 400, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(6,182,212,0.15), transparent)',
-          bottom: -150, left: -80, filter: 'blur(70px)', pointerEvents: 'none',
-        }} />
-
-        <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
-          <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, color: '#f1f5f9', marginBottom: 16, letterSpacing: '-0.02em' }}>
-            Ready to protect your revenue?
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 900, color: '#0F172A', marginBottom: 16 }}>
+            Operationalize Retention for Business Impact
           </h2>
-          <p style={{ fontSize: 15, color: '#a5b4fc', marginBottom: 36, maxWidth: 460, margin: '0 auto 36px' }}>
-            Run a free prediction now. No sign-up required — just enter customer data and get instant AI-powered churn risk analysis.
+          <p style={{ color: '#475569', maxWidth: 600, margin: '0 auto 40px', fontSize: 15, lineHeight: 1.6 }}>
+            Prioritize high-value accounts with positive expected net value (EV). Empower managers with full audit approval tools.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center' }}>
-            <Link
-              to="/predict"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '14px 32px', fontWeight: 700, borderRadius: 12,
-                fontSize: 15, textDecoration: 'none', transition: 'all 0.2s',
-                background: 'white', color: '#4338ca',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
-              }}
-            >
-              Start Predicting
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center' }}>
+            <Link to="/retention" className="btn-primary" style={{ padding: '14px 32px', fontSize: 15 }}>
+              Open Retention Decision Center
               <ArrowRight style={{ width: 16, height: 16 }} />
-            </Link>
-            <Link
-              to="/dashboard"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '14px 32px', fontWeight: 700, borderRadius: 12,
-                fontSize: 15, textDecoration: 'none', transition: 'all 0.2s',
-                color: '#e0e7ff',
-                background: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.2)',
-              }}
-            >
-              View Metrics
-              <BarChart3 style={{ width: 16, height: 16 }} />
             </Link>
           </div>
         </div>
@@ -451,35 +432,38 @@ export default function HomePage() {
 
       {/* ─── FOOTER ─────────────────────────────────────────────────── */}
       <footer style={{
-        background: '#050510',
-        padding: '36px 24px',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
+        background: '#0F172A',
+        color: '#F8FAFC',
+        padding: '40px 24px',
+        borderTop: '1px solid rgba(255,255,255,0.1)',
       }}>
         <div style={{
           maxWidth: 1280, margin: '0 auto',
           display: 'flex', flexWrap: 'wrap',
           alignItems: 'center', justifyContent: 'space-between',
-          gap: 16, fontSize: 13,
+          gap: 20, fontSize: 13,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 30, height: 30, borderRadius: 8,
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              width: 32, height: 32, borderRadius: 8,
+              background: 'linear-gradient(135deg, #1B4332, #2D6A4F)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 12px rgba(139,92,246,0.4)',
             }}>
-              <ShieldAlert style={{ width: 14, height: 14, color: 'white' }} />
+              <ShieldAlert style={{ width: 16, height: 16, color: 'white' }} />
             </div>
-            <span style={{ fontWeight: 700, color: '#f1f5f9' }}>ChurnGuard AI</span>
-            <span style={{ color: '#334155' }}>·</span>
-            <span style={{ color: '#475569' }}>Cost-Sensitive Churn Intelligence</span>
+            <span style={{ fontWeight: 800, color: '#FFFFFF', fontSize: 15 }}>RetainX AI</span>
+            <span style={{ color: '#64748B' }}>|</span>
+            <span style={{ color: '#94A3B8' }}>Executive Decision Intelligence Platform</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-            {[{ to: '/predict', label: 'Predict' }, { to: '/dashboard', label: 'Dashboard' }, { to: '/history', label: 'History' }].map(({ to, label }) => (
-              <Link key={to} to={to} style={{ color: '#475569', textDecoration: 'none', fontWeight: 500, transition: 'color 0.15s' }}
-                onMouseEnter={e => e.target.style.color = '#c4b5fd'}
-                onMouseLeave={e => e.target.style.color = '#475569'}
-              >{label}</Link>
+            {[
+              { to: '/', label: 'Home' },
+              { to: '/predict', label: 'Predict' },
+              { to: '/retention', label: 'Retention Center' },
+              { to: '/dashboard', label: 'Analytics' },
+              { to: '/history', label: 'History' },
+            ].map(({ to, label }) => (
+              <Link key={to} to={to} style={{ color: '#CBD5E1', textDecoration: 'none', fontWeight: 600 }}>{label}</Link>
             ))}
           </div>
         </div>

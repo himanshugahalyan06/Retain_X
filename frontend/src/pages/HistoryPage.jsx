@@ -2,44 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   History, Trash2, ShieldAlert, ShieldCheck, AlertCircle,
-  Search, ArrowRight, Filter, X, ChevronDown
+  Search, ArrowRight, Filter, X, ChevronDown, Clock, UserCheck
 } from 'lucide-react';
 import { useHistory } from '../context/HistoryContext';
 
 function RiskBadge({ pct }) {
   if (pct >= 70) return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
-      <ShieldAlert className="w-3 h-3" /> High
+    <span className="pill-critical" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <ShieldAlert style={{ width: 12, height: 12 }} /> High ({pct}%)
     </span>
   );
   if (pct >= 40) return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200">
-      <AlertCircle className="w-3 h-3" /> Medium
+    <span className="pill-high" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <AlertCircle style={{ width: 12, height: 12 }} /> Medium ({pct}%)
     </span>
   );
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-      <ShieldCheck className="w-3 h-3" /> Low
+    <span className="pill-low" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <ShieldCheck style={{ width: 12, height: 12 }} /> Low ({pct}%)
     </span>
-  );
-}
-
-function ProbabilityBar({ value }) {
-  const pct = Math.round(value * 100);
-  const color = pct >= 70 ? 'bg-red-500' : pct >= 40 ? 'bg-amber-400' : 'bg-emerald-500';
-  return (
-    <div className="flex items-center gap-2 min-w-[120px]">
-      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="text-xs font-bold text-slate-700 w-9 text-right">{pct}%</span>
-    </div>
   );
 }
 
 function ExpandedRow({ entry }) {
   const topFeatures = entry.shapData
-    ? [...entry.shapData].sort((a, b) => Math.abs(b.SHAP) - Math.abs(a.SHAP)).slice(0, 5)
+    ? [...entry.shapData].sort((a, b) => Math.abs(b.SHAP || b.importance || 0) - Math.abs(a.SHAP || a.importance || 0)).slice(0, 5)
     : [];
 
   function fmtName(name) {
@@ -49,39 +36,44 @@ function ExpandedRow({ entry }) {
   }
 
   return (
-    <div className="bg-slate-50 border-t border-slate-100 px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
-      {/* Input fields */}
-      <div>
-        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Customer Profile</div>
-        <div className="grid grid-cols-2 gap-2">
+    <div style={{ background: '#F7F4EF', borderTop: '1px solid #F0EBDD', padding: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+      {/* Customer Profile */}
+      <div className="card" style={{ padding: 16, background: '#FFFFFF' }}>
+        <div style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: 8 }}>
+          Customer Profile
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
           {Object.entries(entry.formData).map(([k, v]) => (
-            <div key={k} className="text-xs">
-              <span className="text-slate-400">{k.replace(/([A-Z])/g, ' $1').trim()}: </span>
-              <span className="font-semibold text-slate-700">{String(v)}</span>
+            <div key={k}>
+              <span style={{ color: '#64748B' }}>{k.replace(/([A-Z])/g, ' $1').trim()}: </span>
+              <span style={{ fontWeight: 700, color: '#0F172A' }}>{String(v)}</span>
             </div>
           ))}
         </div>
       </div>
-      {/* Top SHAP drivers */}
-      <div>
-        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Top Risk Drivers</div>
+
+      {/* Risk Drivers */}
+      <div className="card" style={{ padding: 16, background: '#FFFFFF' }}>
+        <div style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: 8 }}>
+          Top SHAP Risk Drivers
+        </div>
         {topFeatures.length > 0 ? (
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {topFeatures.map((f) => {
-              const isPos = f.SHAP > 0;
+              const val = parseFloat(f.SHAP || f.importance || 0);
+              const isPos = val > 0;
               return (
-                <div key={f.Feature} className="flex items-center gap-2">
-                  <div className={`w-1 h-4 rounded-full flex-shrink-0 ${isPos ? 'bg-red-400' : 'bg-emerald-400'}`} />
-                  <span className="text-xs text-slate-600 flex-1 truncate">{fmtName(f.Feature)}</span>
-                  <span className={`text-xs font-bold ${isPos ? 'text-red-600' : 'text-emerald-600'}`}>
-                    {isPos ? '+' : ''}{parseFloat(f.SHAP).toFixed(3)}
+                <div key={f.Feature || f.feature} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
+                  <span style={{ color: '#334155', fontWeight: 600 }}>{fmtName(f.Feature || f.feature)}</span>
+                  <span style={{ fontWeight: 800, color: isPos ? '#E07A5F' : '#2D6A4F' }}>
+                    {isPos ? '+' : ''}{val.toFixed(3)}
                   </span>
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="text-xs text-slate-400">No SHAP data available</div>
+          <div style={{ fontSize: 12, color: '#94A3B8' }}>No SHAP drivers logged for this evaluation</div>
         )}
       </div>
     </div>
@@ -91,11 +83,11 @@ function ExpandedRow({ entry }) {
 export default function HistoryPage() {
   const { history, clearHistory } = useHistory();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all'); // 'all' | 'churn' | 'safe'
+  const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
-    document.title = 'History — ChurnGuard AI';
+    document.title = 'Prediction Audit History — RetainX';
   }, []);
 
   const filtered = history.filter((entry) => {
@@ -112,23 +104,30 @@ export default function HistoryPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div style={{ maxWidth: 1340, margin: '0 auto', padding: '40px 24px' }}>
+      
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-in-up" style={{ opacity: 0, animationFillMode: 'forwards' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold mb-2">
-            <History className="w-3 h-3" />
-            Session History
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 9999, background: '#D8F3DC', color: '#1B4332', fontSize: 12, fontWeight: 800, marginBottom: 8 }}>
+            <History style={{ width: 14, height: 14, color: '#2D6A4F' }} />
+            SESSION AUDIT LOG
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900">Prediction History</h1>
-          <p className="text-sm text-slate-500 mt-1">All predictions made during this session</p>
+          <h1 style={{ fontSize: 32, fontWeight: 950, color: '#0F172A', margin: 0, letterSpacing: '-0.025em' }}>
+            Prediction History
+          </h1>
+          <p style={{ fontSize: 14, color: '#475569', marginTop: 4, fontWeight: 500 }}>
+            Comprehensive audit log of all customer churn risk evaluations and decision models.
+          </p>
         </div>
+
         {history.length > 0 && (
           <button
             onClick={clearHistory}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors"
+            className="btn-secondary"
+            style={{ fontSize: 13, padding: '8px 16px', color: '#991B1B', borderColor: 'rgba(224,122,95,0.3)' }}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 style={{ width: 14, height: 14 }} />
             Clear History
           </button>
         )}
@@ -136,45 +135,39 @@ export default function HistoryPage() {
 
       {history.length === 0 ? (
         /* Empty state */
-        <div className="card flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-5">
-            <History className="w-8 h-8 text-slate-300" />
+        <div className="card" style={{ padding: 60, textAlign: 'center', background: '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <div style={{ width: 56, height: 56, borderRadius: 16, background: '#F7F4EF', border: '1px solid rgba(212,163,115,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <History style={{ width: 28, height: 28, color: '#D4A373' }} />
           </div>
-          <h3 className="text-lg font-bold text-slate-700 mb-2">No predictions yet</h3>
-          <p className="text-sm text-slate-400 max-w-xs mb-6">
-            Your session history will appear here after you run predictions. History is stored in-memory and clears on page refresh.
-          </p>
-          <Link to="/predict" className="btn-primary text-sm">
-            Run First Prediction
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>No session predictions recorded</h3>
+            <p style={{ fontSize: 14, color: '#64748B', maxWidth: 360, margin: '6px 0 20px' }}>
+              Evaluated predictions will populate here automatically for auditing and comparison.
+            </p>
+            <Link to="/predict" className="btn-primary">
+              Evaluate First Customer <ArrowRight style={{ width: 16, height: 16 }} />
+            </Link>
+          </div>
         </div>
       ) : (
         <>
-          {/* Controls */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-5">
-            {/* Search */}
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          {/* Controls Bar */}
+          <div className="card" style={{ padding: 16, marginBottom: 20, background: '#FFFFFF', display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ position: 'relative', flexGrow: 1, maxWidth: 360 }}>
+              <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: '#94A3B8' }} />
               <input
                 type="text"
-                placeholder="Search by customer attribute…"
+                placeholder="Search attributes..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="form-input pl-9 pr-8"
+                className="form-input"
+                style={{ paddingLeft: 38 }}
               />
-              {search && (
-                <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
             </div>
 
-            {/* Filter pills */}
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <div style={{ display: 'flex', gap: 8 }}>
               {[
-                { key: 'all', label: 'All' },
+                { key: 'all', label: 'All Evaluations' },
                 { key: 'churn', label: 'High Risk' },
                 { key: 'medium', label: 'Medium' },
                 { key: 'safe', label: 'Low Risk' },
@@ -182,11 +175,13 @@ export default function HistoryPage() {
                 <button
                   key={opt.key}
                   onClick={() => setFilter(opt.key)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                    filter === opt.key
-                      ? 'bg-indigo-600 text-white border-indigo-600'
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
-                  }`}
+                  style={{
+                    padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                    background: filter === opt.key ? '#1B4332' : '#F7F4EF',
+                    color: filter === opt.key ? '#FFFFFF' : '#334155',
+                    border: `1px solid ${filter === opt.key ? '#1B4332' : 'rgba(212,163,115,0.3)'}`,
+                    cursor: 'pointer'
+                  }}
                 >
                   {opt.label}
                 </button>
@@ -194,80 +189,71 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* Count */}
-          <div className="text-xs text-slate-400 mb-3">
-            Showing {filtered.length} of {history.length} predictions
+          <div style={{ fontSize: 12, color: '#64748B', marginBottom: 12, fontWeight: 600 }}>
+            Showing {filtered.length} of {history.length} logged evaluations
           </div>
 
-          {/* Table */}
-          <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+          {/* History Table */}
+          <div className="card" style={{ overflow: 'hidden', background: '#FFFFFF' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="text-left py-3 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
-                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Time</th>
-                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Contract</th>
-                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tenure</th>
-                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Monthly $</th>
-                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Probability</th>
-                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Risk</th>
-                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Outcome</th>
-                    <th className="py-3 px-4" />
+                  <tr style={{ background: '#F7F4EF', borderBottom: '1px solid #F0EBDD' }}>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>#</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>Timestamp</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>Contract</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>Tenure</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>Monthly Bill</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'center', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>Probability</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'center', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>Risk Tier</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'center', color: '#475569', fontWeight: 800, fontSize: 11, textTransform: 'uppercase' }}>Classification</th>
+                    <th style={{ padding: '12px 16px' }} />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {filtered.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="py-12 text-center text-slate-400 text-sm">No results match your filters.</td>
-                    </tr>
-                  ) : (
-                    filtered.map((entry, idx) => {
-                      const pct = Math.round(entry.prediction.probability * 100);
-                      const isExpanded = expanded === entry.id;
-                      const dt = new Date(entry.timestamp);
-                      return (
-                        <React.Fragment key={entry.id}>
-                          <tr
-                            className="hover:bg-slate-50/50 transition-colors cursor-pointer"
-                            onClick={() => setExpanded(isExpanded ? null : entry.id)}
-                          >
-                            <td className="py-3.5 px-6 font-mono text-xs text-slate-400">{history.length - idx}</td>
-                            <td className="py-3.5 px-4 text-slate-600 whitespace-nowrap">
-                              <div className="text-xs">{dt.toLocaleDateString()}</div>
-                              <div className="text-[10px] text-slate-400">{dt.toLocaleTimeString()}</div>
-                            </td>
-                            <td className="py-3.5 px-4 text-slate-700 text-xs max-w-[100px] truncate">{entry.formData.Contract}</td>
-                            <td className="py-3.5 px-4 text-slate-700 text-xs">{entry.formData.tenure} mo</td>
-                            <td className="py-3.5 px-4 text-slate-700 text-xs">${entry.formData.MonthlyCharges}</td>
-                            <td className="py-3.5 px-4"><ProbabilityBar value={entry.prediction.probability} /></td>
-                            <td className="py-3.5 px-4"><RiskBadge pct={pct} /></td>
-                            <td className="py-3.5 px-4">
-                              <span className={`text-xs font-semibold ${entry.prediction.prediction === 1 ? 'text-red-600' : 'text-emerald-600'}`}>
-                                {entry.prediction.prediction === 1 ? 'Churn' : 'Retained'}
-                              </span>
-                            </td>
-                            <td className="py-3.5 px-4">
-                              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                <tbody>
+                  {filtered.map((entry, idx) => {
+                    const pct = Math.round(entry.prediction.probability * 100);
+                    const isExpanded = expanded === entry.id;
+                    const dt = new Date(entry.timestamp);
+                    return (
+                      <React.Fragment key={entry.id}>
+                        <tr
+                          style={{ borderBottom: '1px solid #F0EBDD', cursor: 'pointer', transition: 'background 0.15s' }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = '#F7F4EF'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                          onClick={() => setExpanded(isExpanded ? null : entry.id)}
+                        >
+                          <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#94A3B8', fontWeight: 700 }}>{history.length - idx}</td>
+                          <td style={{ padding: '12px 16px', color: '#334155', fontWeight: 600 }}>{dt.toLocaleTimeString()}</td>
+                          <td style={{ padding: '12px 16px', fontWeight: 700, color: '#0F172A' }}>{entry.formData.Contract}</td>
+                          <td style={{ padding: '12px 16px', color: '#334155' }}>{entry.formData.tenure} mos</td>
+                          <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 800, color: '#0F172A' }}>${entry.formData.MonthlyCharges}</td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 900, color: pct >= 70 ? '#E07A5F' : '#2D6A4F' }}>{pct}%</td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center' }}><RiskBadge pct={pct} /></td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 800, color: entry.prediction.prediction === 1 ? '#E07A5F' : '#2D6A4F' }}>
+                            {entry.prediction.prediction === 1 ? 'Churn' : 'Retained'}
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                            <ChevronDown style={{ width: 16, height: 16, color: '#64748B', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan={9} style={{ padding: 0 }}>
+                              <ExpandedRow entry={entry} />
                             </td>
                           </tr>
-                          {isExpanded && (
-                            <tr>
-                              <td colSpan={9} className="p-0">
-                                <ExpandedRow entry={entry} />
-                              </td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      );
-                    })
-                  )}
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
         </>
       )}
+
     </div>
   );
 }

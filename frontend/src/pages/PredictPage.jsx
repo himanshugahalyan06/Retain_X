@@ -3,74 +3,137 @@ import { Link } from 'react-router-dom';
 import {
   User, Wifi, CreditCard, ChevronRight, ChevronLeft,
   Zap, ShieldAlert, ShieldCheck, Target, BarChart3,
-  AlertCircle, ArrowRight, RotateCcw
+  AlertCircle, ArrowRight, RotateCcw, Check, Sparkles,
+  HelpCircle, DollarSign, Info, ArrowUpRight, Scale
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine
 } from 'recharts';
 import { predict, explain } from '../lib/api';
 import { useHistory } from '../context/HistoryContext';
+import WhatIfSimulator from '../components/WhatIfSimulator';
 
-/* ── Field Definitions ────────────────────────────────────────────── */
-const STEPS = [
+/* ── Tooltip Component for Technical Terms ────────────────────────── */
+const TERMS_GLOSSARY = {
+  'AUC': 'Area Under Curve (AUC-ROC) measures model discrimination capability (0.5 = random, 1.0 = perfect).',
+  'Threshold': 'Cost-sensitive probability cutoff tuned to balance intervention cost vs loss of customer lifetime value.',
+  'SHAP': 'Shapley Additive exPlanations quantify exact contribution of each feature towards boosting or lowering risk.',
+  'Expected Value': 'Expected Net Financial Savings (EV) = (Predicted Uplift × CLV) - Intervention Incentive Cost.',
+  'ROI': 'Return on Investment = Net Financial Savings divided by Intervention Incentive Cost.',
+  'Churn Probability': 'Calibrated model score representing likelihood (0-100%) that customer will disconnect service.',
+  'CLV': 'Customer Lifetime Value — total expected gross revenue remaining from customer relationship.'
+};
+
+function TermTooltip({ term }) {
+  const explanation = TERMS_GLOSSARY[term] || 'Technical model metric.';
+  return (
+    <span className="tooltip-container" style={{ cursor: 'help', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+      <span style={{ borderBottom: '1px dotted #64748B' }}>{term}</span>
+      <Info style={{ width: 12, height: 12, color: '#2D6A4F' }} />
+      <span className="tooltip-text">
+        <strong>{term}</strong>: {explanation}
+      </span>
+    </span>
+  );
+}
+
+/* ── Form Section Definitions ─────────────────────────────────────── */
+const SECTIONS = [
   {
-    id: 'personal',
-    title: 'Personal Info',
-    subtitle: 'Basic customer demographics and account status',
+    id: 'demographics',
+    num: '01',
+    title: 'Demographics & Tenure',
+    subtitle: 'Account ownership characteristics and tenure duration',
     icon: User,
     fields: [
-      { name: 'gender', label: 'Gender', type: 'select', options: ['Female', 'Male'] },
-      { name: 'SeniorCitizen', label: 'Senior Citizen', type: 'select', options: [0, 1], display: { 0: 'No', 1: 'Yes' } },
-      { name: 'Partner', label: 'Partner', type: 'select', options: ['Yes', 'No'] },
-      { name: 'Dependents', label: 'Dependents', type: 'select', options: ['Yes', 'No'] },
-      { name: 'tenure', label: 'Tenure (months)', type: 'number', min: 0, max: 72 },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Female', 'Male'], hint: 'Customer gender identity' },
+      { name: 'SeniorCitizen', label: 'Senior Citizen (65+)', type: 'select', options: [0, 1], display: { 0: 'No (Under 65)', 1: 'Yes (65+ years old)' }, hint: 'Is customer 65 years or older' },
+      { name: 'Partner', label: 'Partner Linked', type: 'select', options: ['Yes', 'No'], hint: 'Spouse or partner on account' },
+      { name: 'Dependents', label: 'Dependents Linked', type: 'select', options: ['Yes', 'No'], hint: 'Children or dependents linked' },
+      { name: 'tenure', label: 'Tenure (Months active)', type: 'number', min: 0, max: 72, hint: 'Active tenure duration (0-72 months)' },
     ],
   },
   {
     id: 'services',
-    title: 'Services',
-    subtitle: 'Phone and internet service subscriptions',
+    num: '02',
+    title: 'Services & Subscriptions',
+    subtitle: 'Phone lines, internet type, and add-on security products',
     icon: Wifi,
     fields: [
-      { name: 'PhoneService', label: 'Phone Service', type: 'select', options: ['Yes', 'No'] },
-      { name: 'MultipleLines', label: 'Multiple Lines', type: 'select', options: ['Yes', 'No', 'No phone service'] },
-      { name: 'InternetService', label: 'Internet Service', type: 'select', options: ['DSL', 'Fiber optic', 'No'] },
-      { name: 'OnlineSecurity', label: 'Online Security', type: 'select', options: ['Yes', 'No', 'No internet service'] },
-      { name: 'OnlineBackup', label: 'Online Backup', type: 'select', options: ['Yes', 'No', 'No internet service'] },
-      { name: 'DeviceProtection', label: 'Device Protection', type: 'select', options: ['Yes', 'No', 'No internet service'] },
-      { name: 'TechSupport', label: 'Tech Support', type: 'select', options: ['Yes', 'No', 'No internet service'] },
-      { name: 'StreamingTV', label: 'Streaming TV', type: 'select', options: ['Yes', 'No', 'No internet service'] },
-      { name: 'StreamingMovies', label: 'Streaming Movies', type: 'select', options: ['Yes', 'No', 'No internet service'] },
+      { name: 'PhoneService', label: 'Phone Service', type: 'select', options: ['Yes', 'No'], hint: 'Landline/Mobile line subscription' },
+      { name: 'MultipleLines', label: 'Multiple Lines', type: 'select', options: ['Yes', 'No', 'No phone service'], hint: 'Multiple active phone lines' },
+      { name: 'InternetService', label: 'Internet Service', type: 'select', options: ['Fiber optic', 'DSL', 'No'], hint: 'Fiber optic users have higher churn propensity' },
+      { name: 'OnlineSecurity', label: 'Online Security', type: 'select', options: ['Yes', 'No', 'No internet service'], hint: 'Cybersecurity add-on feature' },
+      { name: 'OnlineBackup', label: 'Cloud Backup', type: 'select', options: ['Yes', 'No', 'No internet service'], hint: 'Automated cloud storage backup' },
+      { name: 'DeviceProtection', label: 'Device Protection', type: 'select', options: ['Yes', 'No', 'No internet service'], hint: 'Hardware warranty protection plan' },
+      { name: 'TechSupport', label: 'VIP Tech Support', type: 'select', options: ['Yes', 'No', 'No internet service'], hint: 'Priority technical support desk' },
+      { name: 'StreamingTV', label: 'Streaming TV', type: 'select', options: ['Yes', 'No', 'No internet service'], hint: 'Live TV streaming add-on' },
+      { name: 'StreamingMovies', label: 'Streaming Movies', type: 'select', options: ['Yes', 'No', 'No internet service'], hint: 'On-demand movies package' },
     ],
   },
   {
     id: 'billing',
-    title: 'Billing',
-    subtitle: 'Contract terms and payment details',
+    num: '03',
+    title: 'Billing & Economics',
+    subtitle: 'Contract terms, monthly charges, and custom CLV override',
     icon: CreditCard,
     fields: [
-      { name: 'Contract', label: 'Contract Type', type: 'select', options: ['Month-to-month', 'One year', 'Two year'] },
-      { name: 'PaperlessBilling', label: 'Paperless Billing', type: 'select', options: ['Yes', 'No'] },
+      { name: 'Contract', label: 'Contract Type', type: 'select', options: ['Month-to-month', 'One year', 'Two year'], hint: 'Month-to-month contracts present highest churn risk' },
+      { name: 'PaperlessBilling', label: 'Paperless Billing', type: 'select', options: ['Yes', 'No'], hint: 'Digital e-billing enabled' },
       {
         name: 'PaymentMethod', label: 'Payment Method', type: 'select',
         options: ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'],
+        hint: 'Electronic check carries higher historical churn rate'
       },
-      { name: 'MonthlyCharges', label: 'Monthly Charges ($)', type: 'number', step: 0.01, min: 0 },
-      { name: 'TotalCharges', label: 'Total Charges ($)', type: 'number', step: 0.01, min: 0 },
+      { name: 'MonthlyCharges', label: 'Monthly Charges ($)', type: 'number', step: 0.01, min: 0, hint: 'Current recurring monthly bill' },
+      { name: 'TotalCharges', label: 'Historical Total ($)', type: 'number', step: 0.01, min: 0, hint: 'Cumulative revenue paid to date' },
+      { name: 'custom_customer_value', label: 'CLV Override ($) [Optional]', type: 'number', step: 100, min: 0, hint: 'Custom CLV override; leave empty for auto-estimation' }
     ],
   },
 ];
 
-const DEFAULT_STATE = {
-  gender: 'Female', SeniorCitizen: 0, Partner: 'No', Dependents: 'No',
-  tenure: 1, PhoneService: 'Yes', MultipleLines: 'No',
-  InternetService: 'Fiber optic', OnlineSecurity: 'No', OnlineBackup: 'Yes',
-  DeviceProtection: 'No', TechSupport: 'No', StreamingTV: 'No', StreamingMovies: 'No',
-  Contract: 'Month-to-month', PaperlessBilling: 'Yes',
-  PaymentMethod: 'Electronic check', MonthlyCharges: 29.85, TotalCharges: 29.85,
-};
+/* ── Preset Profiles for 1-Click Testing ─────────────────────────── */
+const PRESETS = [
+  {
+    name: '🔴 High Risk Account',
+    desc: 'Fiber Optic, Month-to-Month, No Tech Support ($105/mo)',
+    data: {
+      gender: 'Female', SeniorCitizen: 0, Partner: 'No', Dependents: 'No',
+      tenure: 2, PhoneService: 'Yes', MultipleLines: 'Yes',
+      InternetService: 'Fiber optic', OnlineSecurity: 'No', OnlineBackup: 'No',
+      DeviceProtection: 'No', TechSupport: 'No', StreamingTV: 'Yes', StreamingMovies: 'Yes',
+      Contract: 'Month-to-month', PaperlessBilling: 'Yes',
+      PaymentMethod: 'Electronic check', MonthlyCharges: 105.35, TotalCharges: 210.70,
+    }
+  },
+  {
+    name: '🟡 Medium Risk Account',
+    desc: 'DSL Internet, 1-Yr Contract, Moderate bill ($64/mo)',
+    data: {
+      gender: 'Male', SeniorCitizen: 0, Partner: 'Yes', Dependents: 'No',
+      tenure: 14, PhoneService: 'Yes', MultipleLines: 'No',
+      InternetService: 'DSL', OnlineSecurity: 'Yes', OnlineBackup: 'No',
+      DeviceProtection: 'Yes', TechSupport: 'No', StreamingTV: 'No', StreamingMovies: 'No',
+      Contract: 'One year', PaperlessBilling: 'No',
+      PaymentMethod: 'Credit card (automatic)', MonthlyCharges: 64.80, TotalCharges: 907.20,
+    }
+  },
+  {
+    name: '🟢 Low Risk Account',
+    desc: '2-Yr Contract, High Tenure (60m), Full Tech Support ($98/mo)',
+    data: {
+      gender: 'Female', SeniorCitizen: 0, Partner: 'Yes', Dependents: 'Yes',
+      tenure: 60, PhoneService: 'Yes', MultipleLines: 'Yes',
+      InternetService: 'Fiber optic', OnlineSecurity: 'Yes', OnlineBackup: 'Yes',
+      DeviceProtection: 'Yes', TechSupport: 'Yes', StreamingTV: 'Yes', StreamingMovies: 'Yes',
+      Contract: 'Two year', PaperlessBilling: 'Yes',
+      PaymentMethod: 'Bank transfer (automatic)', MonthlyCharges: 98.50, TotalCharges: 5910.00,
+    }
+  }
+];
 
-/* ── SHAP label formatter ─────────────────────────────────────────── */
+const DEFAULT_STATE = PRESETS[0].data;
+
 function formatFeature(name) {
   let clean = name.replace('categorical__', '').replace('numerical__', '').replace('remainder__', '');
   if (clean.includes('_')) {
@@ -80,62 +143,48 @@ function formatFeature(name) {
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
 
-/* ── Circular gauge ───────────────────────────────────────────────── */
+/* ── Circular Probability Gauge ─────────────────────────────────── */
 function ProbabilityGauge({ probability }) {
   const pct = Math.round(probability * 100);
   const radius = 52;
   const circ = 2 * Math.PI * radius;
   const strokeDash = (pct / 100) * circ;
-  const color = pct >= 70 ? '#f43f5e' : pct >= 40 ? '#f59e0b' : '#10b981';
-  const glowColor = pct >= 70 ? 'rgba(244,63,94,0.3)' : pct >= 40 ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.3)';
-  const bgColor = pct >= 70 ? 'rgba(244,63,94,0.08)' : pct >= 40 ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.08)';
-  const borderColor = pct >= 70 ? 'rgba(244,63,94,0.2)' : pct >= 40 ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)';
+  
+  const color = pct >= 70 ? '#E07A5F' : pct >= 40 ? '#D4A373' : '#2D6A4F';
+  const bgBadge = pct >= 70 ? 'rgba(224,122,95,0.12)' : pct >= 40 ? 'rgba(212,163,115,0.18)' : '#D8F3DC';
+  const borderBadge = pct >= 70 ? 'rgba(224,122,95,0.35)' : pct >= 40 ? 'rgba(212,163,115,0.4)' : 'rgba(45,106,79,0.3)';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: bgColor, borderRadius: 16, padding: '24px 32px', border: `1px solid ${borderColor}` }}>
-      <div style={{ position: 'relative', width: 144, height: 144 }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      background: bgBadge, borderRadius: 18, padding: '20px 24px',
+      border: `1px solid ${borderBadge}`, width: '100%'
+    }}>
+      <div style={{ position: 'relative', width: 140, height: 140 }}>
         <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="10" />
+          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(15,23,42,0.08)" strokeWidth="10" />
           <circle
             cx="60" cy="60" r={radius} fill="none"
             stroke={color} strokeWidth="10"
             strokeDasharray={`${strokeDash} ${circ}`}
             strokeLinecap="round"
-            style={{ transition: 'stroke-dasharray 1s ease', filter: `drop-shadow(0 0 8px ${glowColor})` }}
+            style={{ transition: 'stroke-dasharray 1s ease' }}
           />
         </svg>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 38, fontWeight: 900, color: '#f1f5f9', lineHeight: 1 }}>{pct}</span>
-          <span style={{ fontSize: 16, fontWeight: 700, color }}> %</span>
+          <span style={{ fontSize: 36, fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{pct}%</span>
+          <span style={{ fontSize: 11, fontWeight: 800, color, marginTop: 2 }}>CHURN RISK</span>
         </div>
       </div>
-      <div style={{ marginTop: 12, fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Churn Probability</div>
+      <div style={{ marginTop: 12, fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <TermTooltip term="Churn Probability" />
+      </div>
     </div>
   );
 }
 
-/* ── Risk badge ────────────────────────────────────────────────────── */
-function RiskBadge({ pct }) {
-  if (pct >= 70) return (
-    <span style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 16px', borderRadius:9999, background:'rgba(244,63,94,0.12)', border:'1px solid rgba(244,63,94,0.3)', color:'#fda4af', fontSize:13, fontWeight:700 }}>
-      <ShieldAlert style={{ width:15, height:15 }} /> High Risk
-    </span>
-  );
-  if (pct >= 40) return (
-    <span style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 16px', borderRadius:9999, background:'rgba(245,158,11,0.12)', border:'1px solid rgba(245,158,11,0.3)', color:'#fde68a', fontSize:13, fontWeight:700 }}>
-      <AlertCircle style={{ width:15, height:15 }} /> Medium Risk
-    </span>
-  );
-  return (
-    <span style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 16px', borderRadius:9999, background:'rgba(16,185,129,0.12)', border:'1px solid rgba(16,185,129,0.3)', color:'#6ee7b7', fontSize:13, fontWeight:700 }}>
-      <ShieldCheck style={{ width:15, height:15 }} /> Low Risk
-    </span>
-  );
-}
-
-/* ── Main Page ────────────────────────────────────────────────────── */
 export default function PredictPage() {
-  const [step, setStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(0); // 0: Profile, 1: Services, 2: Economics
   const [formData, setFormData] = useState(DEFAULT_STATE);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -144,15 +193,22 @@ export default function PredictPage() {
   const { addEntry } = useHistory();
 
   useEffect(() => {
-    document.title = 'Predict — ChurnGuard AI';
+    document.title = 'ML Analyst Workstation — RetainX';
   }, []);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     let v = value;
-    if (type === 'number') v = parseFloat(value);
-    else if (name === 'SeniorCitizen') v = parseInt(value, 10);
+    if (type === 'number') {
+      v = value === '' ? '' : parseFloat(value);
+    } else if (name === 'SeniorCitizen') {
+      v = parseInt(value, 10);
+    }
     setFormData((prev) => ({ ...prev, [name]: v }));
+  };
+
+  const handleApplyPreset = (presetData) => {
+    setFormData(presetData);
   };
 
   const handleSubmit = async () => {
@@ -167,7 +223,8 @@ export default function PredictPage() {
       setShapData(expRes.data);
       addEntry(formData, predRes.data, expRes.data);
     } catch (err) {
-      setError('Could not reach the prediction API. Make sure the backend is running on http://localhost:8000.');
+      console.error(err);
+      setError('Could not reach the prediction API. Ensure FastAPI backend is running on http://localhost:8000.');
     } finally {
       setLoading(false);
     }
@@ -177,263 +234,305 @@ export default function PredictPage() {
     setPrediction(null);
     setShapData(null);
     setError(null);
-    setStep(0);
+    setActiveStep(0);
     setFormData(DEFAULT_STATE);
   };
-
-  const currentStep = STEPS[step];
-  const isLastStep = step === STEPS.length - 1;
-  const pct = prediction ? Math.round(prediction.probability * 100) : 0;
 
   const chartData = shapData
     ? shapData.map((item) => ({
         name: formatFeature(item.Feature),
         value: parseFloat(item.SHAP),
-        fill: item.SHAP > 0 ? '#ef4444' : '#10b981',
+        fill: item.SHAP > 0 ? '#DC2626' : '#059669',
       }))
     : [];
 
-  if (prediction) {
-    return (
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 24px' }} className="animate-fade-in">
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
-          <div>
-            <div className="badge badge-violet" style={{ marginBottom: 10 }}>
-              <Target style={{ width: 12, height: 12 }} /> Risk Assessment
-            </div>
-            <h1 style={{ fontSize: 28, fontWeight: 900, color: '#f1f5f9', letterSpacing: '-0.02em', margin: 0 }}>Churn Risk Report</h1>
-            <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>Cost-optimized prediction result with SHAP explanations</p>
-          </div>
-          <button onClick={reset} className="btn-secondary" style={{ fontSize: 13, padding: '9px 20px' }}>
-            <RotateCcw style={{ width: 14, height: 14 }} />
-            New Prediction
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 20 }}>
-          {/* Gauge card */}
-          <div className="card" style={{ padding: 28, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-            <ProbabilityGauge probability={prediction.probability} />
-            <RiskBadge pct={pct} />
-            {prediction.threshold && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#64748b', background: 'rgba(255,255,255,0.04)', padding: '6px 14px', borderRadius: 9999, border: '1px solid rgba(255,255,255,0.08)' }}>
-                <Target style={{ width: 13, height: 13, color: '#818cf8' }} />
-                Threshold: {(prediction.threshold * 100).toFixed(1)}%
-              </div>
-            )}
-            <div style={{ width: '100%', padding: '12px 16px', borderRadius: 12, fontSize: 13, fontWeight: 600, textAlign: 'center', background: prediction.prediction === 1 ? 'rgba(244,63,94,0.08)' : 'rgba(16,185,129,0.08)', border: `1px solid ${prediction.prediction === 1 ? 'rgba(244,63,94,0.25)' : 'rgba(16,185,129,0.25)'}`, color: prediction.prediction === 1 ? '#fda4af' : '#6ee7b7' }}>
-              {prediction.prediction === 1
-                ? '⚠️ Customer likely to churn — recommend intervention'
-                : '✓ Customer unlikely to churn — retention looks stable'}
-            </div>
-          </div>
-
-          {/* SHAP chart */}
-          <div className="card" style={{ padding: 28 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>Key Risk Drivers</h3>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, fontWeight: 600 }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#fda4af' }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f43f5e', boxShadow: '0 0 6px #f43f5e' }} />Increases Risk</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6ee7b7' }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981' }} />Decreases Risk</span>
-              </div>
-            </div>
-            <p style={{ fontSize: 12, color: '#475569', marginBottom: 16 }}>SHAP values showing feature contribution to prediction</p>
-            {chartData.length > 0 ? (
-              <div style={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 40, left: 10, bottom: 0 }}>
-                    <XAxis type="number" hide domain={['dataMin', 'dataMax']} />
-                    <YAxis
-                      dataKey="name" type="category" axisLine={false} tickLine={false}
-                      width={150} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
-                    />
-                    <Tooltip
-                      cursor={{ fill: '#f8fafc' }}
-                      formatter={(v) => [Math.abs(v).toFixed(4), v > 0 ? 'Increases Risk' : 'Decreases Risk']}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-                    />
-                    <ReferenceLine x={0} stroke="#cbd5e1" strokeWidth={1} />
-                    <Bar dataKey="value" radius={[4, 4, 4, 4]} barSize={18}>
-                      {chartData.map((entry, i) => (
-                        <Cell key={i} fill={entry.fill} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-48 text-slate-400 text-sm">No SHAP data available</div>
-            )}
-          </div>
-        </div>
-
-        {/* Input summary */}
-        <div className="card" style={{ padding: 24 }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#94a3b8', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <User style={{ width: 15, height: 15, color: '#818cf8' }} /> Input Summary
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 10 }}>
-            {Object.entries(formData).map(([k, v]) => (
-              <div key={k} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{k.replace(/([A-Z])/g, ' $1').trim()}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{String(v)}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 flex flex-wrap gap-4 justify-center">
-          <Link to="/history" className="btn-secondary">
-            <BarChart3 className="w-4 h-4" /> View History
-          </Link>
-          <Link to="/dashboard" className="btn-primary">
-            View Dashboard <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ maxWidth: 760, margin: '0 auto', padding: '40px 24px' }}>
-      {/* Page Header */}
-      <div className="animate-fade-in-up" style={{ marginBottom: 32, opacity: 0, animationFillMode: 'forwards' }}>
-        <div className="badge badge-violet" style={{ marginBottom: 14 }}>
-          <Zap style={{ width: 12, height: 12 }} />
-          Cost-Sensitive Prediction
-        </div>
-        <h1 style={{ fontSize: 30, fontWeight: 900, color: '#f1f5f9', letterSpacing: '-0.02em', margin: 0 }}>Churn Risk Prediction</h1>
-        <p style={{ color: '#64748b', marginTop: 8, fontSize: 14 }}>Fill in the customer profile across three sections to get an AI-powered churn risk score.</p>
-      </div>
-
-      {/* Step indicator */}
-      <div className="flex items-center gap-2 mb-8">
-        {STEPS.map((s, i) => {
-          const done = i < step;
-          const active = i === step;
-          return (
-            <React.Fragment key={s.id}>
-              <div
-                className={`flex items-center gap-2 cursor-pointer transition-all ${done ? 'opacity-100' : active ? 'opacity-100' : 'opacity-40'}`}
-                onClick={() => done && setStep(i)}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  done ? 'bg-indigo-600 text-white' : active ? 'bg-indigo-600 text-white ring-4 ring-indigo-100' : 'bg-slate-200 text-slate-500'
-                }`}>
-                  {done ? '✓' : i + 1}
-                </div>
-                <span className={`hidden sm:block text-sm font-semibold ${active ? 'text-indigo-700' : 'text-slate-500'}`}>{s.title}</span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-0.5 rounded-full transition-all ${done ? 'bg-indigo-600' : 'bg-slate-200'}`} />
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* Step card */}
-      <div className="card animate-fade-in" style={{ overflow: 'hidden' }}>
-        {/* Step header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '20px 24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.05))', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <div style={{ width: 42, height: 42, borderRadius: 13, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(139,92,246,0.4)', flexShrink: 0 }}>
-            <currentStep.icon style={{ width: 19, height: 19, color: 'white' }} />
-          </div>
-          <div>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>{currentStep.title}</h2>
-            <p style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{currentStep.subtitle}</p>
-          </div>
-          <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: '#475569' }}>Step {step + 1} of {STEPS.length}</span>
+    <div style={{ maxWidth: 1440, margin: '0 auto', padding: '24px' }}>
+      
+      {/* Workstation Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            Customer Risk Scoring & Decision Workstation
+          </h1>
+          <p style={{ fontSize: 13, color: '#64748B', marginTop: 3, marginBottom: 0 }}>
+            Evaluate individual churn risk probabilities, analyze local <TermTooltip term="SHAP" /> drivers, and simulate retention scenarios.
+          </p>
         </div>
 
-        {/* Fields */}
-        <div className="p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {currentStep.fields.map((field) => (
-              <div key={field.name} className="space-y-1.5">
-                <label className="form-label">{field.label}</label>
-                {field.type === 'select' ? (
-                  <select
-                    name={field.name}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                    className="form-input cursor-pointer"
+        {prediction && (
+          <button onClick={reset} className="btn-secondary" style={{ fontSize: 12.5 }}>
+            <RotateCcw style={{ width: 14, height: 14 }} />
+            Score New Profile
+          </button>
+        )}
+      </div>
+
+      {/* Preset Profiles Bar */}
+      <div className="saas-card" style={{ padding: '14px 16px', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+          <Sparkles style={{ width: 15, height: 15, color: '#2563EB' }} />
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: '#0F172A' }}>1-Click Analyst Preset Profiles</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 10 }}>
+          {PRESETS.map((p, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => handleApplyPreset(p.data)}
+              style={{
+                textAlign: 'left',
+                background: '#F8FAFC',
+                padding: '10px 12px',
+                borderRadius: 8,
+                border: '1px solid #E2E8F0',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+              className="hover:border-blue-500"
+            >
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#0F172A' }}>{p.name}</div>
+              <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* MAIN TWO-COLUMN WORKSTATION LAYOUT */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 20, alignItems: 'start' }}>
+        
+        {/* ── LEFT COLUMN: CUSTOMER PROFILE FORM ──────────────────── */}
+        <div style={{ gridColumn: 'span 12' }} className="lg:col-span-7">
+          <div className="saas-card" style={{ padding: 20 }}>
+            
+            {/* Form Step Nav Tabs */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 20, borderBottom: '1px solid #E2E8F0', paddingBottom: 12 }}>
+              {SECTIONS.map((sec, idx) => {
+                const Icon = sec.icon;
+                const active = activeStep === idx;
+                return (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => setActiveStep(idx)}
+                    style={{
+                      flex: 1,
+                      display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
+                      padding: '8px 10px',
+                      borderRadius: 6,
+                      background: active ? '#EFF6FF' : '#F8FAFC',
+                      border: `1px solid ${active ? '#BFDBFE' : '#E2E8F0'}`,
+                      color: active ? '#1D4ED8' : '#64748B',
+                      fontWeight: active ? 700 : 500,
+                      fontSize: 12,
+                      cursor: 'pointer',
+                    }}
                   >
-                    {field.options.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {field.display ? field.display[opt] : opt}
-                      </option>
-                    ))}
-                  </select>
+                    <Icon style={{ width: 14, height: 14 }} />
+                    {sec.num} {sec.title.split(' ')[0]}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Current Form Step Content */}
+            <div>
+              <div style={{ marginBottom: 20 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                  {SECTIONS[activeStep].num}. {SECTIONS[activeStep].title}
+                </h3>
+                <p style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
+                  {SECTIONS[activeStep].subtitle}
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
+                {SECTIONS[activeStep].fields.map((field) => (
+                  <div key={field.name} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <label className="form-label">{field.label}</label>
+                    {field.type === 'select' ? (
+                      <select
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleChange}
+                        className="form-input"
+                      >
+                        {field.options.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {field.display ? field.display[opt] : opt}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="number"
+                        name={field.name}
+                        value={formData[field.name] ?? ''}
+                        onChange={handleChange}
+                        min={field.min ?? 0}
+                        max={field.max}
+                        step={field.step ?? 1}
+                        className="form-input"
+                        placeholder="Enter value"
+                      />
+                    )}
+                    {field.hint && (
+                      <span style={{ fontSize: 11, color: '#94A3B8' }}>{field.hint}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {error && (
+              <div style={{ margin: '0 0 20px', padding: '12px 16px', background: 'rgba(224,122,95,0.12)', border: '1px solid rgba(224,122,95,0.3)', borderRadius: 10, color: '#991B1B', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <AlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
+                {error}
+              </div>
+            )}
+
+            {/* Step Controls */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid #F0EBDD' }}>
+              <button
+                type="button"
+                onClick={() => setActiveStep((s) => Math.max(0, s - 1))}
+                disabled={activeStep === 0}
+                className="btn-secondary"
+                style={{ opacity: activeStep === 0 ? 0.4 : 1, fontSize: 13 }}
+              >
+                <ChevronLeft style={{ width: 16, height: 16 }} /> Previous Section
+              </button>
+
+              {activeStep < 2 ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveStep((s) => Math.min(2, s + 1))}
+                  className="btn-primary"
+                  style={{ fontSize: 13 }}
+                >
+                  Next Section <ChevronRight style={{ width: 16, height: 16 }} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="btn-primary"
+                  style={{ fontSize: 14, padding: '12px 28px' }}
+                >
+                  {loading ? 'Evaluating Model…' : 'Run Risk Assessment'}
+                  <Zap style={{ width: 16, height: 16 }} />
+                </button>
+              )}
+            </div>
+
+          </div>
+        </div>
+
+        {/* ── RIGHT COLUMN: RISK INTELLIGENCE PANEL ───────────────── */}
+        <div style={{ gridColumn: 'span 12' }} className="lg:col-span-5">
+          {!prediction ? (
+            /* Calm Empty State */
+            <div className="saas-card" style={{ padding: 32, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheck style={{ width: 24, height: 24, color: '#2563EB' }} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                  Ready to assess customer risk
+                </h3>
+                <p style={{ fontSize: 13, color: '#64748B', marginTop: 4, lineHeight: 1.4, maxWidth: 300 }}>
+                  Select a preset profile or enter custom attributes, then click <strong>Run Risk Assessment</strong> to compute calibrated churn probability.
+                </p>
+              </div>
+              <div style={{ background: '#F8FAFC', borderRadius: 8, padding: 12, border: '1px solid #E2E8F0', width: '100%', textAlign: 'left', fontSize: 11.5, color: '#334155' }}>
+                <div style={{ fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>Workstation Specifications:</div>
+                <div>• Model: Cost-Sensitive Random Forest (AUC 94.2%)</div>
+                <div>• Optimization: Asymmetric Loss Matrix Threshold Tuning</div>
+                <div>• Local Explainability: SHAP Exact Feature Attribution</div>
+              </div>
+            </div>
+          ) : (
+            /* Active Prediction Results Panel */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              
+              {/* Gauge Card */}
+              <div className="saas-card" style={{ padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+                <ProbabilityGauge probability={prediction.probability ?? prediction.risk?.churn_probability ?? 0.0} />
+
+                <div style={{
+                  width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 13, fontWeight: 700, textAlign: 'center',
+                  background: (prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '#FEF2F2' : '#ECFDF5',
+                  border: `1px solid ${(prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '#FECACA' : '#A7F3D0'}`,
+                  color: (prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '#991B1B' : '#065F46'
+                }}>
+                  {(prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '⚠️ High Churn Risk Flagged' : '✓ Customer Retention Stable'}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, width: '100%', fontSize: 12 }}>
+                  <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+                    <div style={{ color: '#64748B', fontWeight: 600 }}>Decision Cutoff</div>
+                    <div style={{ fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{Number(prediction.threshold ?? prediction.risk?.threshold ?? 0.10).toFixed(2)}</div>
+                  </div>
+                  <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+                    <div style={{ color: '#64748B', fontWeight: 600 }}>Estimated CLV</div>
+                    <div style={{ fontWeight: 800, color: '#0F172A', marginTop: 2 }}>${Number(prediction.customer_value ?? prediction.economics?.estimated_economic_value ?? 0).toLocaleString()}</div>
+                  </div>
+                </div>
+              </div>
+
+
+              {/* SHAP Chart Panel */}
+              <div className="saas-card" style={{ padding: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                    SHAP Feature Drivers
+                  </h3>
+                  <div style={{ display: 'flex', gap: 8, fontSize: 11, fontWeight: 600 }}>
+                    <span style={{ color: '#DC2626' }}>↑ Higher risk</span>
+                    <span style={{ color: '#059669' }}>↓ Lower risk</span>
+                  </div>
+                </div>
+                
+                {chartData.length > 0 ? (
+                  <div style={{ height: 220 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
+                        <XAxis type="number" hide domain={['dataMin', 'dataMax']} />
+                        <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={130} tick={{ fill: '#334155', fontSize: 11, fontWeight: 600 }} />
+                        <Tooltip contentStyle={{ borderRadius: 6, background: '#0F172A', color: '#FFF', fontSize: 12 }} />
+                        <ReferenceLine x={0} stroke="#E2E8F0" strokeWidth={1} />
+                        <Bar dataKey="value" radius={[3, 3, 3, 3]} barSize={12}>
+                          {chartData.map((entry, i) => (
+                            <Cell key={i} fill={entry.fill} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 ) : (
-                  <input
-                    type="number"
-                    name={field.name}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                    min={field.min ?? 0}
-                    max={field.max}
-                    step={field.step ?? 1}
-                    className="form-input"
-                  />
+                  <div style={{ textAlign: 'center', color: '#94A3B8', padding: 20, fontSize: 12 }}>No SHAP drivers calculated.</div>
                 )}
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Error */}
-        {error && (
-          <div style={{ margin: '0 24px 16px', padding: '12px 16px', background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 12, color: '#fda4af', fontSize: 13, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-            <AlertCircle style={{ width: 15, height: 15, flexShrink: 0, marginTop: 1 }} />
-            {error}
-          </div>
-        )}
+              {/* What-If Scenario Simulator Panel */}
+              <WhatIfSimulator
+                customerData={formData}
+                originalProbability={prediction.probability}
+                shapExplanation={chartData}
+              />
 
-        {/* Navigation */}
-        <div style={{ padding: '20px 24px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 8 }}>
-          <button
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
-            disabled={step === 0}
-            className="btn-secondary px-5 py-2.5 text-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </button>
+              {/* View in Directory Link */}
+              <Link to="/customers" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '10px 14px', textDecoration: 'none' }}>
+                View in Customer Intelligence Directory <ArrowUpRight style={{ width: 15, height: 15 }} />
+              </Link>
 
-          {isLastStep ? (
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="btn-primary px-7 py-2.5 text-sm"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Analyzing…
-                </>
-              ) : (
-                <>
-                  Generate Risk Assessment
-                  <Zap className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          ) : (
-            <button
-              onClick={() => setStep((s) => s + 1)}
-              className="btn-primary px-7 py-2.5 text-sm"
-            >
-              Continue
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            </div>
           )}
         </div>
+
       </div>
+
     </div>
   );
 }

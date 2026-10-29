@@ -1,12 +1,12 @@
 """
-Run ChurnGuard
+Run RetainX
 """
 
 import subprocess
 import os
 
 print("=" * 60)
-print("STARTING CHURNGUARD API")
+print("STARTING RETAINX API")
 print("=" * 60)
 
 env = os.environ.copy()

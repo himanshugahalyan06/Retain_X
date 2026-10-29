@@ -1,22 +1,22 @@
 ================================================================================
-                                CHURNGUARD AI
-                  Cost-Sensitive Machine Learning Pipeline
+                                   RETAINX AI
+                   Cost-Sensitive Machine Learning Pipeline
 ================================================================================
 
 1. WHAT IS THIS PROJECT?
 --------------------------------------------------------------------------------
-ChurnGuard AI is an End-to-End Machine Learning Operations (MLOps) platform built for subscription businesses (like telecom companies). 
+RetainX AI is an End-to-End Machine Learning Operations (MLOps) platform built for subscription businesses (like telecom companies). 
 
 When customers cancel their subscriptions, it is called "Churn." Losing customers is very expensive because acquiring a new customer costs much more than retaining an existing one.
 
-Instead of waiting for a customer to leave, ChurnGuard AI uses historical data (the Telco Customer Churn dataset) to predict which customers are highly likely to churn *before* they actually leave. This allows the business to proactively intervene (e.g., offer a discount or better tech support).
+Instead of waiting for a customer to leave, RetainX AI uses historical data (the Telco Customer Churn dataset) to predict which customers are highly likely to churn *before* they actually leave. This allows the business to proactively intervene (e.g., offer a discount or better tech support).
 
 2. WHY IS THIS PROJECT SPECIAL? (The "Wow" Factor)
 --------------------------------------------------------------------------------
 Most college ML projects simply build a model, check the "accuracy," and stop. This project is built like a true Enterprise AI product:
 
 - COST-SENSITIVE OPTIMIZATION: It doesn't care about generic "accuracy." It mathematically calculates how much a False Positive (offering a discount to someone who wasn't going to leave) costs vs. a False Negative (losing a customer you could have saved). It automatically adjusts the "Decision Threshold" (e.g., 10% instead of the default 50%) to save the business the maximum amount of money.
-- SHAP EXPLAINABILITY: Business managers don't trust "black box" AI. ChurnGuard includes an explainer (SHAP) that breaks down the exact physical force every factor played in the prediction. (e.g., "The risk is 85% because they have a Month-to-Month contract, but it was slightly lowered because they have Tech Support").
+- SHAP EXPLAINABILITY: Business managers don't trust "black box" AI. RetainX includes an explainer (SHAP) that breaks down the exact physical force every factor played in the prediction. (e.g., "The risk is 85% because they have a Month-to-Month contract, but it was slightly lowered because they have Tech Support").
 - FULL STACK ARCHITECTURE: It has a robust Python/FastAPI backend and a gorgeous, premium React/Tailwind frontend that simulates a real internal operational tool used by retention managers.
 
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Activity, Users, AlertTriangle, Clock } from 'lucide-react';
+import { getMetrics } from '../lib/api';
 
 export default function MonitoringDashboard() {
   const [metrics, setMetrics] = useState(null);
@@ -9,7 +9,7 @@ export default function MonitoringDashboard() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/metrics');
+        const response = await getMetrics();
         setMetrics(response.data);
         setError(null);
       } catch (err) {

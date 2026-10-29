@@ -1,6 +1,32 @@
 version: "3.9"
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-churnguard}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow
+    command: mlflow ui --host 0.0.0.0 --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    restart: unless-stopped
+
   api:
     build:
       context: ..
@@ -8,26 +34,14 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/churnguard
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-churnguard}
       - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-churnguard-dev-super-secure-production-jwt-key-2026}
+      - ENVIRONMENT=production
     depends_on:
-      - postgres
-      - mlflow
-
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: churnguard
-    ports:
-      - "5432:5432"
-
-  mlflow:
-    image: ghcr.io/mlflow/mlflow
-    command: mlflow ui --host 0.0.0.0
-    ports:
-      - "5000:5000"
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     build:
@@ -39,3 +53,10 @@ services:
       - "80:80"
     depends_on:
       - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    name: churnguard_postgres_data
+  mlflow_data:
+    name: churnguard_mlflow_data

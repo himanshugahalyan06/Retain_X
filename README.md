@@ -1,7 +1,7 @@
-# 🛡️ ChurnGuard AI
+# 🛡️ RetainX AI
 
-> **Cost-Sensitive Customer Churn Prediction System**
-> ML-powered churn prediction with SHAP explainability, optimized threshold tuning, and a full-stack web interface.
+> **Cost-Sensitive Customer Churn Prediction & Retention Decision Intelligence System**
+> ML-powered churn prediction with SHAP explainability, optimized threshold tuning, and a full-stack web interface.cd
 
 ---
 
@@ -91,7 +91,7 @@ npm run dev
 
 ## 🔍 Project Overview
 
-ChurnGuard AI predicts which telecom customers are likely to churn, with a business-first approach:
+RetainX AI predicts which telecom customers are likely to churn, with a business-first approach:
 
 - **Cost-sensitive training** — penalizes missing a churner more than a false alarm
 - **Threshold tuning** — optimal decision threshold tuned to minimize total business cost
@@ -328,7 +328,7 @@ curl -X POST http://localhost:8000/predict \
 
 ### 🏠 Home Page (`/`)
 
-- Hero section explaining ChurnGuard
+- Hero section explaining RetainX
 - Stats: AUC score, latency, cost reduction
 - Feature cards and how-it-works steps
 - CTA buttons linking to Predict and Dashboard
@@ -464,4 +464,4 @@ lsof -ti:5173 | xargs kill -9
 
 ---
 
-*Built with ❤️ — ChurnGuard AI v1.0*
+*Built with ❤️ — RetainX AI v2.0*

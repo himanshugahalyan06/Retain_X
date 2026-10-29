@@ -1,0 +1,37 @@
+{
+    "model_version": "v2.0.0",
+    "algorithm": "RandomForestClassifier+SigmoidCalibration",
+    "trained_at": "2026-10-29T12:21:48.439028",
+    "random_state": 42,
+    "hyperparameters": {
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_leaf": 4,
+        "class_weight": "balanced_subsample"
+    },
+    "split_strategy": "stratified_60_20_20",
+    "split_sizes": {
+        "train": 4212,
+        "val": 1404,
+        "test": 1405
+    },
+    "selected_threshold": 0.1,
+    "threshold_selection_split": "validation",
+    "cost_assumptions": {
+        "false_negative_cost": 5000,
+        "false_positive_cost": 500
+    },
+    "test_metrics": {
+        "accuracy": 0.6206405693950178,
+        "precision": 0.4056271981242673,
+        "recall": 0.9301075268817204,
+        "f1_score": 0.5648979591836735,
+        "roc_auc": 0.8352837543848692,
+        "pr_auc": 0.6422710708911119,
+        "brier_score": 0.13974227535851927,
+        "log_loss": 0.4309390307250487,
+        "cost_at_threshold": 383500,
+        "cost_at_default": 937500,
+        "business_savings": 554000
+    }
+}

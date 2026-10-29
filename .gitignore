@@ -43,3 +43,10 @@ Thumbs.db
 .env*.local
 .vscode/
 .idea/
+
+# ML Experiment Tracking & Ephemeral Data
+mlruns/
+catboost_info/
+artifacts/batch_exports/
+artifacts/company_models/
+artifacts/datasets/
