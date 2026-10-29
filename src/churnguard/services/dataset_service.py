@@ -21,8 +21,11 @@ from churnguard.database.models import CompanyDataset
 
 logger = logging.getLogger(__name__)
 
-DATASETS_STORAGE_DIR = ARTIFACTS_DIR / "datasets"
-DATASETS_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+DATASETS_STORAGE_DIR = Path("/tmp/artifacts/datasets") if os.getenv("VERCEL") else (ARTIFACTS_DIR / "datasets")
+try:
+    DATASETS_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 
 def save_and_inspect_dataset(

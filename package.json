@@ -1,0 +1,11 @@
+{
+  "name": "retain-x-platform",
+  "version": "2.0.0",
+  "private": true,
+  "description": "RetainX - AI-Powered Customer Retention & Churn Decision Intelligence Platform",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "dev": "cd frontend && npm run dev",
+    "preview": "cd frontend && npm run preview"
+  }
+}

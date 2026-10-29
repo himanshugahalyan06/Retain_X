@@ -11,10 +11,19 @@ from sqlalchemy.orm import sessionmaker
 BASE_DIR = Path(__file__).resolve().parents[3]
 FALLBACK_DB = BASE_DIR / "churnguard.db"
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    f"sqlite:///{FALLBACK_DB}"
-)
+if os.getenv("VERCEL") and not os.getenv("DATABASE_URL"):
+    # In Vercel serverless functions, the root directory is read-only.
+    # Copy bundled database to /tmp so SQLite write operations and journal locks succeed.
+    import shutil
+    TMP_DB = Path("/tmp/churnguard.db")
+    if not TMP_DB.exists() and FALLBACK_DB.exists():
+        try:
+            shutil.copy2(FALLBACK_DB, TMP_DB)
+        except Exception:
+            pass
+    DATABASE_URL = f"sqlite:///{TMP_DB}"
+else:
+    DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{FALLBACK_DB}")
 
 engine = create_engine(
     DATABASE_URL, 

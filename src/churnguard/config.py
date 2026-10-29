@@ -109,6 +109,9 @@ def ensure_directories():
         SHAP_DIR
     ]
     for directory in directories:
-        directory.mkdir(parents=True, exist_ok=True)
+        try:
+            directory.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
         
 ensure_directories()

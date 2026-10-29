@@ -49,8 +49,11 @@ from churnguard.database.models import CompanyDataset, CompanyTrainingJob, Compa
 
 logger = logging.getLogger(__name__)
 
-MODELS_STORAGE_DIR = ARTIFACTS_DIR / "company_models"
-MODELS_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+MODELS_STORAGE_DIR = Path("/tmp/artifacts/company_models") if os.getenv("VERCEL") else (ARTIFACTS_DIR / "company_models")
+try:
+    MODELS_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 # Active runtime model predictor cache by company_id
 ACTIVE_COMPANY_PREDICTORS: Dict[int, Any] = {}

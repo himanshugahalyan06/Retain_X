@@ -6,7 +6,10 @@ import numpy as np
 import logging
 from typing import Dict, Any, List, Union
 
-import mlflow
+try:
+    import mlflow
+except ImportError:
+    mlflow = None
 
 from churnguard.config import (
     MODEL_DIR,
@@ -29,10 +32,10 @@ class Predictor:
     def __init__(self):
         logger.info("Initializing Predictor...")
         
-        use_mlflow = os.getenv("ENABLE_MLFLOW", "false").lower() == "true"
+        use_mlflow = os.getenv("ENABLE_MLFLOW", "false").lower() == "true" and mlflow is not None
         self.model = None
 
-        if use_mlflow:
+        if use_mlflow and mlflow is not None:
             mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
             try:
                 logger.info("Attempting to load model from MLflow registry...")
