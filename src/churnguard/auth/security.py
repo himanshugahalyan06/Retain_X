@@ -4,9 +4,9 @@ Handles bcrypt password hashing and JWT token creation/decoding.
 """
 
 import os
+import bcrypt
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
-from passlib.context import CryptContext
 from jose import JWTError, jwt
 
 # Secret key and algorithm configuration
@@ -24,7 +24,6 @@ elif ENV in ("production", "prod") and SECRET_KEY == DEFAULT_INSECURE_SECRET:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "1440")) # 24 hours
 
-import bcrypt
 
 
 def hash_password(password: str) -> str:
