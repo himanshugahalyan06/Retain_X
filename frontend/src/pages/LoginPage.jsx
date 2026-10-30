@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShieldAlert,
   Lock,
@@ -21,7 +21,16 @@ import {
 export default function LoginPage() {
   const { login, signup, loading, authError, setAuthError } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState('login'); // 'login' or 'signup'
+  const location = useLocation();
+  const [tab, setTab] = useState(location.pathname === '/signup' ? 'signup' : 'login');
+
+  useEffect(() => {
+    if (location.pathname === '/signup') {
+      setTab('signup');
+    } else if (location.pathname === '/login') {
+      setTab('login');
+    }
+  }, [location.pathname]);
 
   // Form states
   const [email, setEmail] = useState('');

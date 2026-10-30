@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { HistoryProvider } from './context/HistoryContext';
@@ -47,9 +47,9 @@ function NotFoundPage() {
       <p className="text-xs text-[#656565] mb-6 max-w-sm">
         The workspace path you requested does not exist or has been relocated.
       </p>
-      <a href="/dashboard" className="btn-ink text-xs py-2.5 px-5">
+      <Link to="/dashboard" className="btn-ink text-xs py-2.5 px-5">
         Return to Dashboard
-      </a>
+      </Link>
     </div>
   );
 }

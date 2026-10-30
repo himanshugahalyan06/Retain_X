@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ShieldAlert, TrendingUp, DollarSign, CheckCircle, XCircle, RefreshCw, Filter,
   Search, SlidersHorizontal, UserCheck, AlertTriangle, ShieldCheck, Zap, Layers,
@@ -273,9 +274,9 @@ export default function RetentionPage() {
                   <p style={{ margin: '4px 0 16px', fontSize: 12.5, color: '#656565', maxWidth: 420 }}>
                     Upload your customer dataset or score accounts to dynamically map customers into strategic retention quadrants.
                   </p>
-                  <a href="/data-models" className="btn-primary" style={{ textDecoration: 'none', fontSize: 12, padding: '6px 14px' }}>
+                  <Link to="/data-models" className="btn-primary" style={{ textDecoration: 'none', fontSize: 12, padding: '6px 14px' }}>
                     Open Data & Model Studio
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
