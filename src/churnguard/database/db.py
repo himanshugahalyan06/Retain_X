@@ -16,11 +16,21 @@ if os.getenv("VERCEL") and not os.getenv("DATABASE_URL"):
     # Copy bundled database to /tmp so SQLite write operations and journal locks succeed.
     import shutil
     TMP_DB = Path("/tmp/churnguard.db")
-    if not TMP_DB.exists() and FALLBACK_DB.exists():
-        try:
-            shutil.copy2(FALLBACK_DB, TMP_DB)
-        except Exception:
-            pass
+    candidate_locations = [
+        FALLBACK_DB,
+        Path.cwd() / "churnguard.db",
+        Path("/var/task/churnguard.db"),
+        Path(__file__).resolve().parent / "churnguard.db",
+        Path(__file__).resolve().parents[2] / "churnguard.db"
+    ]
+    if not TMP_DB.exists():
+        for cand in candidate_locations:
+            if cand.exists():
+                try:
+                    shutil.copy2(cand, TMP_DB)
+                    break
+                except Exception:
+                    pass
     DATABASE_URL = f"sqlite:///{TMP_DB}"
 else:
     DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{FALLBACK_DB}")

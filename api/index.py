@@ -16,3 +16,7 @@ if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
 from api.main import app
+
+# Export handler for Vercel Serverless Function compatibility
+handler = app
+

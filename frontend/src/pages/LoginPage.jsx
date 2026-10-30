@@ -39,7 +39,7 @@ export default function LoginPage() {
   const [fullName, setFullName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(true);
   const [successMessage, setSuccessMessage] = useState('');
 
   // Password strength validation criteria

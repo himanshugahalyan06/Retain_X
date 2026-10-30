@@ -1,3 +1,4 @@
+import os
 import random
 from datetime import datetime, timedelta
 from churnguard.database.db import SessionLocal
@@ -104,6 +105,11 @@ def seed_enriched_customer_data(db, customer: Customer, prob: float):
 def seed_db():
     db = SessionLocal()
     try:
+        # Fast exit: if admin user already exists, seed is complete
+        existing_admin = db.query(User).filter_by(email="admin@retainx.ai").first()
+        if existing_admin:
+            return
+
         # 0. Seed Default Company and Admin User
         company = db.query(Company).first()
         if not company:
@@ -229,9 +235,9 @@ def seed_db():
             db.commit()
             print("Demo Campaign seeded.")
 
-        # Seed Customer Campaign Data if fewer than 10 predictions exist
+        # Seed Customer Campaign Data if fewer than 10 predictions exist and not in constrained serverless runtime
         prediction_count = db.query(Prediction).count()
-        if prediction_count < 10:
+        if prediction_count < 10 and not os.getenv("VERCEL"):
             print("Seeding customer predictions, retention decisions, and enriched domain tables...")
 
             contracts = ["Month-to-month", "One year", "Two year"]
