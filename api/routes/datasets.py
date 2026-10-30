@@ -12,7 +12,12 @@ from sqlalchemy.orm import Session
 
 from api.dependencies import get_db
 from churnguard.database.models import User, CompanyDataset
-from churnguard.auth.dependencies import get_current_active_user
+from churnguard.auth.dependencies import (
+    get_current_active_user,
+    require_manager,
+    require_admin,
+    log_audit_event
+)
 from churnguard.services.dataset_service import (
     save_and_inspect_dataset,
     profile_dataset,
@@ -31,7 +36,7 @@ class TargetConfigRequest(BaseModel):
 @router.post("/datasets/upload")
 async def upload_dataset_endpoint(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
@@ -162,11 +167,12 @@ def profile_dataset_endpoint(
 @router.delete("/datasets/{dataset_id}")
 def delete_dataset_endpoint(
     dataset_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
     Delete a company dataset and associated file safely.
+    ADMIN only.
     """
     dataset = db.query(CompanyDataset).filter(
         CompanyDataset.id == dataset_id,
@@ -178,4 +184,16 @@ def delete_dataset_endpoint(
 
     db.delete(dataset)
     db.commit()
+
+    log_audit_event(
+        db=db,
+        company_id=current_user.company_id,
+        user_id=current_user.id,
+        user_email=current_user.email,
+        action="DATASET_DELETED",
+        resource_type="DATASET",
+        resource_id=str(dataset_id),
+        details={"dataset_name": dataset.name}
+    )
+
     return {"success": True, "message": f"Dataset #{dataset_id} deleted successfully."}

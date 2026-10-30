@@ -55,8 +55,14 @@ def get_db():
 
 def sync_sqlite_columns():
     """
-    Ensure SQLite tables contain multi-tenancy columns without requiring manual migrations.
+    Ensure SQLite tables and multi-tenancy columns are synchronized.
     """
+    try:
+        from churnguard.database.models import Base
+        Base.metadata.create_all(bind=engine)
+    except Exception:
+        pass
+
     if "sqlite" in DATABASE_URL:
         try:
             with engine.connect() as conn:
@@ -64,15 +70,18 @@ def sync_sqlite_columns():
                     "customers", "predictions", "retention_decisions", "business_settings",
                     "campaigns", "campaign_assignments", "interventions", "intervention_outcomes",
                     "manager_logs", "prediction_logs", "customer_behavioral_data", "customer_crm_data",
-                    "customer_support_data", "customer_payment_data"
+                    "customer_support_data", "customer_payment_data", "users"
                 ]
 
                 for table in tables:
                     try:
                         res = conn.execute(text(f"PRAGMA table_info({table})")).fetchall()
                         cols = [r[1] for r in res]
-                        if cols and "company_id" not in cols:
+                        if cols and "company_id" not in cols and table != "users":
                             conn.execute(text(f"ALTER TABLE {table} ADD COLUMN company_id INTEGER"))
+                            conn.commit()
+                        if table == "users" and cols and "is_verified" not in cols:
+                            conn.execute(text(f"ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT 1"))
                             conn.commit()
                     except Exception:
                         pass

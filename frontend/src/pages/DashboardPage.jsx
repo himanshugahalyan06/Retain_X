@@ -8,7 +8,6 @@ import {
   Scale,
   RefreshCw,
   Zap,
-  ArrowUpRight,
   ShieldCheck,
   CheckCircle2,
   PieChart as PieIcon,
@@ -17,7 +16,8 @@ import {
   ArrowRight,
   Database,
   Cpu,
-  Layers
+  Layers,
+  Activity
 } from 'lucide-react';
 import {
   PieChart,
@@ -29,24 +29,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-  Legend,
-  AreaChart,
-  Area
+  ResponsiveContainer
 } from 'recharts';
 import { Link } from 'react-router-dom';
 import { getMetrics, getRetentionDashboard, getRetentionQueue, getDashboardAnalytics } from '../lib/api';
 
-const RISK_TIER_COLORS = {
-  'Low Risk': '#10B981',
-  'Medium Risk': '#F59E0B',
-  'High Risk': '#EF4444',
-  'Critical Risk': '#991B1B',
-  'Healthy': '#10B981',
-  'At Risk': '#EF4444'
-};
-
-const CHURN_DONUT_COLORS = ['#10B981', '#EF4444'];
+const CHURN_DONUT_COLORS = ['#5FB57A', '#EF4444'];
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState(null);
@@ -54,7 +42,6 @@ export default function DashboardPage() {
   const [urgentQueue, setUrgentQueue] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -88,22 +75,28 @@ export default function DashboardPage() {
   const optimalThreshold = analytics?.model_metrics?.threshold ?? (metrics?.calibrated_threshold || 0.42);
   const activeModelName = analytics?.model_metrics?.version
     ? `${analytics.model_metrics.algorithm} (${analytics.model_metrics.version})`
-    : 'Calibrated Random Forest (Platform)';
+    : 'Calibrated Random Forest (Production)';
 
   const churnDist = analytics?.churn_distribution && analytics.churn_distribution.length > 0
     ? analytics.churn_distribution
     : [
         { name: 'Retained', value: totalAccounts - atRiskCount, percentage: (100 - Number(atRiskPct)).toFixed(1) },
-        { name: 'Churned', value: atRiskCount, percentage: Number(atRiskPct).toFixed(1) }
+        { name: 'At Risk', value: atRiskCount, percentage: Number(atRiskPct).toFixed(1) }
       ];
 
-  const riskDist = analytics?.risk_distribution && analytics.risk_distribution.length > 0
-    ? analytics.risk_distribution
+  const probHistogram = analytics?.probability_histogram && analytics.probability_histogram.length > 0
+    ? analytics.probability_histogram
     : [
-        { tier: 'Low Risk', count: Math.round(totalAccounts * 0.55), percentage: 55.0, color: '#10B981' },
-        { tier: 'Medium Risk', count: Math.round(totalAccounts * 0.18), percentage: 18.0, color: '#F59E0B' },
-        { tier: 'High Risk', count: Math.round(totalAccounts * 0.19), percentage: 19.0, color: '#EF4444' },
-        { tier: 'Critical Risk', count: Math.round(totalAccounts * 0.08), percentage: 8.0, color: '#991B1B' }
+        { bucket: '0-10%', count: 1840 },
+        { bucket: '10-20%', count: 1420 },
+        { bucket: '20-30%', count: 850 },
+        { bucket: '30-40%', count: 520 },
+        { bucket: '40-50%', count: 410 },
+        { bucket: '50-60%', count: 480 },
+        { bucket: '60-70%', count: 560 },
+        { bucket: '70-80%', count: 490 },
+        { bucket: '80-90%', count: 320 },
+        { bucket: '90-100%', count: 153 }
       ];
 
   const contractRisk = analytics?.contract_risk && analytics.contract_risk.length > 0
@@ -114,209 +107,201 @@ export default function DashboardPage() {
         { contract: 'Two year', churn_rate: 2.8, total: 1695, churned: 48 }
       ];
 
-  const probHistogram = analytics?.probability_histogram && analytics.probability_histogram.length > 0
-    ? analytics.probability_histogram
-    : [
-        { bucket: '0-10%', count: 2150 },
-        { bucket: '10-20%', count: 1420 },
-        { bucket: '20-30%', count: 890 },
-        { bucket: '30-40%', count: 710 },
-        { bucket: '40-50%', count: 520 },
-        { bucket: '50-60%', count: 480 },
-        { bucket: '60-70%', count: 390 },
-        { bucket: '70-80%', count: 290 },
-        { bucket: '80-90%', count: 130 },
-        { bucket: '90-100%', count: 63 }
-      ];
-
   const tenureRisk = analytics?.tenure_risk && analytics.tenure_risk.length > 0
     ? analytics.tenure_risk
     : [
-        { tenure_group: '0-12m', churn_rate: 47.4, total: 2186, churned: 1037 },
-        { tenure_group: '13-24m', churn_rate: 28.7, total: 1024, churned: 294 },
-        { tenure_group: '25-48m', churn_rate: 18.1, total: 1594, churned: 289 },
-        { tenure_group: '49-72m', churn_rate: 11.1, total: 2239, churned: 249 }
+        { tenure_group: '0-12 Mo', churn_rate: 47.4, total: 2186, churned: 1037 },
+        { tenure_group: '13-24 Mo', churn_rate: 28.7, total: 1024, churned: 294 },
+        { tenure_group: '25-48 Mo', churn_rate: 20.3, total: 1594, churned: 324 },
+        { tenure_group: '49-72 Mo', churn_rate: 9.5, total: 2239, churned: 214 }
       ];
 
   return (
-    <div style={{ padding: '24px', maxWidth: 1440, margin: '0 auto' }}>
-      {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+    <div className="space-y-6">
+      {/* ─── HEADER BAR ────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-              Executive Churn & Retention Intelligence
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-black text-[#111111] font-display tracking-tight">
+              Executive Retention Overview
             </h1>
-            {analytics?.model_metrics?.is_company_specific && (
-              <span style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>
-                Company Active Model
-              </span>
-            )}
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#EBF7EF] text-[#1B5E34] border border-[#A6DCB8] uppercase">
+              Production Calibrated
+            </span>
           </div>
-          <p style={{ fontSize: 13, color: '#64748B', marginTop: 4, marginBottom: 0 }}>
-            Live portfolio distributions, risk migration, calibrated decision cutoffs, and urgent customer interventions.
+          <p className="text-xs text-[#656565] mt-1">
+            Real-time portfolio churn dynamics, risk migration, calibrated decision thresholds, and urgent intervention queues.
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button onClick={fetchDashboardData} disabled={loading} className="btn-secondary" style={{ fontSize: 12.5 }}>
-            <RefreshCw style={{ width: 14, height: 14, animation: loading ? 'spin 1s linear infinite' : 'none' }} />
-            Refresh
+        <div className="flex items-center gap-2">
+          <button
+            onClick={fetchDashboardData}
+            disabled={loading}
+            className="btn-secondary py-2 px-3 text-xs font-bold flex items-center gap-1.5"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
           </button>
-          <Link to="/data-models" className="btn-secondary" style={{ fontSize: 12.5, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <Database style={{ width: 14, height: 14, color: '#6366F1' }} />
-            Data & Model Studio
+          <Link
+            to="/data-models"
+            className="btn-secondary py-2 px-3 text-xs font-bold flex items-center gap-1.5"
+          >
+            <Database className="w-3.5 h-3.5 text-[#5FB57A]" />
+            <span>Model Studio</span>
           </Link>
-          <Link to="/predict" className="btn-primary" style={{ fontSize: 12.5, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <Zap style={{ width: 14, height: 14 }} />
-            Score Customer
+          <Link
+            to="/predict"
+            className="btn-ink py-2 px-4 text-xs font-bold flex items-center gap-1.5"
+          >
+            <Zap className="w-3.5 h-3.5 text-[#5FB57A]" />
+            <span>Score Customer</span>
           </Link>
         </div>
       </div>
 
-      {/* Top 4 Executive KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}>
-        {/* Total Monitored Accounts */}
-        <div className="saas-card" style={{ padding: '18px 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-              Total Monitored Accounts
+      {/* ─── TOP 4 EXECUTIVE KPI CARDS ─────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Accounts */}
+        <div className="saas-card p-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
+              Monitored Base
             </span>
-            <Users style={{ width: 18, height: 18, color: '#2563EB' }} />
+            <Users className="w-4 h-4 text-[#111111]" />
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#0F172A' }}>
+          <div className="text-3xl font-black text-[#111111] font-display">
             {Number(totalAccounts).toLocaleString()}
           </div>
-          <div style={{ fontSize: 12, color: '#059669', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <TrendingUp style={{ width: 14, height: 14 }} /> Tenant Scoped Data
+          <div className="flex items-center gap-1.5 text-xs text-[#5FB57A] font-bold mt-2">
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>Tenant-Isolated Database</span>
           </div>
         </div>
 
         {/* At-Risk Accounts */}
-        <div className="saas-card" style={{ padding: '18px 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+        <div className="saas-card p-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
               At-Risk Accounts
             </span>
-            <AlertTriangle style={{ width: 18, height: 18, color: '#DC2626' }} />
+            <AlertTriangle className="w-4 h-4 text-red-600" />
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#DC2626' }}>
+          <div className="text-3xl font-black text-red-600 font-display">
             {Number(atRiskCount).toLocaleString()}
           </div>
-          <div style={{ fontSize: 12, color: '#991B1B', fontWeight: 600, marginTop: 4 }}>
-            {atRiskPct}% of portfolio above threshold
+          <div className="text-xs text-red-700 font-semibold mt-2">
+            {atRiskPct}% above optimal cutoff
           </div>
         </div>
 
         {/* Protected Revenue */}
-        <div className="saas-card" style={{ padding: '18px 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-              Protected Revenue Saved
+        <div className="saas-card p-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
+              Protected Revenue
             </span>
-            <DollarSign style={{ width: 18, height: 18, color: '#059669' }} />
+            <DollarSign className="w-4 h-4 text-[#5FB57A]" />
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#059669' }}>
+          <div className="text-3xl font-black text-[#5FB57A] font-display">
             ${Number(revenueSaved).toLocaleString()}
           </div>
-          <div style={{ fontSize: 12, color: '#059669', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <TrendingDown style={{ width: 14, height: 14 }} /> 3.4x ROI vs Baseline
+          <div className="flex items-center gap-1 text-xs text-[#656565] font-semibold mt-2">
+            <TrendingDown className="w-3.5 h-3.5 text-[#5FB57A]" />
+            <span>3.4× ROI vs flat interventions</span>
           </div>
         </div>
 
-        {/* Active Model Cutoff & Specs */}
-        <div className="saas-card" style={{ padding: '18px 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-              Decision Cutoff & Model
+        {/* Optimal Cutoff & Model */}
+        <div className="saas-card p-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
+              Optimal Cutoff (p*)
             </span>
-            <Scale style={{ width: 18, height: 18, color: '#6366F1' }} />
+            <Scale className="w-4 h-4 text-[#111111]" />
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#0F172A' }}>
+          <div className="text-3xl font-black text-[#111111] font-display">
             {Number(optimalThreshold).toFixed(2)}
           </div>
-          <div style={{ fontSize: 12, color: '#4F46E5', fontWeight: 600, marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div className="text-xs text-[#656565] font-medium mt-2 truncate">
             {activeModelName}
           </div>
         </div>
       </div>
 
-      {/* Row 1: Churn Distribution & Churn Probability Distribution */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 20, marginBottom: 24 }}>
-        {/* Churn vs Retained Donut (5 cols) */}
-        <div className="saas-card" style={{ gridColumn: 'span 12' }} className="lg:col-span-5 saas-card">
+      {/* ─── ROW 1: CHURN DONUT & PROBABILITY HISTOGRAM ────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Churn vs Retained Donut */}
+        <div className="lg:col-span-5 saas-card">
           <div className="saas-card-header">
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Portfolio Churn Distribution
-              </h3>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                Proportion of retained vs churn-classified accounts
-              </p>
+              <h3 className="text-sm font-bold text-[#111111]">Portfolio Churn Distribution</h3>
+              <p className="text-[11.5px] text-[#656565]">Ratio of healthy to at-risk accounts</p>
             </div>
           </div>
-          <div className="saas-card-body" style={{ height: 280, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <ResponsiveContainer width="100%" height={210}>
-              <PieChart>
-                <Pie
-                  data={churnDist}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  stroke="#FFFFFF"
-                  strokeWidth={2}
-                >
-                  {churnDist.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={CHURN_DONUT_COLORS[index % CHURN_DONUT_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(val, name, item) => [`${Number(val).toLocaleString()} accounts (${item.payload.percentage}%)`, name]}
-                  contentStyle={{ background: '#0F172A', borderRadius: 8, color: '#FFF', fontSize: 12 }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 20, fontSize: 12 }}>
+          <div className="saas-card-body flex flex-col items-center justify-center">
+            <div className="h-52 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={churnDist}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={80}
+                    paddingAngle={4}
+                    stroke="#FFFFFF"
+                    strokeWidth={2}
+                  >
+                    {churnDist.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={CHURN_DONUT_COLORS[index % CHURN_DONUT_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(val, name, item) => [`${Number(val).toLocaleString()} accounts (${item.payload.percentage}%)`, name]}
+                    contentStyle={{ background: '#111111', border: '1px solid #333333', borderRadius: 8, color: '#FFF', fontSize: 12 }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-6 text-xs mt-2">
               {churnDist.map((d, i) => (
-                <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: CHURN_DONUT_COLORS[i % CHURN_DONUT_COLORS.length] }} />
-                  <span style={{ fontWeight: 600, color: '#334155' }}>{d.name}:</span>
-                  <span style={{ color: '#64748B' }}>{d.percentage}% ({Number(d.value).toLocaleString()})</span>
+                <div key={d.name} className="flex items-center gap-2">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ background: CHURN_DONUT_COLORS[i % CHURN_DONUT_COLORS.length] }}
+                  />
+                  <span className="font-semibold text-[#111111]">{d.name}:</span>
+                  <span className="text-[#656565]">{d.percentage}% ({Number(d.value).toLocaleString()})</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Churn Probability Histogram (7 cols) */}
-        <div className="saas-card" style={{ gridColumn: 'span 12' }} className="lg:col-span-7 saas-card">
+        {/* Churn Probability Histogram */}
+        <div className="lg:col-span-7 saas-card">
           <div className="saas-card-header">
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Churn Probability Distribution
-              </h3>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                Account density across 10-point probability deciles
-              </p>
+              <h3 className="text-sm font-bold text-[#111111]">Churn Probability Distribution</h3>
+              <p className="text-[11.5px] text-[#656565]">Portfolio density across 10-point probability deciles</p>
             </div>
           </div>
-          <div className="saas-card-body" style={{ height: 280 }}>
+          <div className="saas-card-body h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={probHistogram} margin={{ top: 15, right: 15, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                <XAxis dataKey="bucket" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} />
+              <BarChart data={probHistogram} margin={{ top: 10, right: 15, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#EBEBEA" />
+                <XAxis dataKey="bucket" tick={{ fontSize: 11, fill: '#656565' }} axisLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#656565' }} axisLine={false} />
                 <Tooltip
-                  formatter={(val) => [`${Number(val).toLocaleString()} accounts`, 'Volume']}
-                  contentStyle={{ background: '#0F172A', borderRadius: 8, color: '#FFF', fontSize: 12 }}
+                  formatter={(val) => [`${Number(val).toLocaleString()} accounts`, 'Density']}
+                  contentStyle={{ background: '#111111', border: '1px solid #333333', borderRadius: 8, color: '#FFF', fontSize: 12 }}
                 />
                 <Bar dataKey="count" name="Accounts" radius={[4, 4, 0, 0]}>
                   {probHistogram.map((entry, index) => {
-                    const color = index < 4 ? '#10B981' : index < 7 ? '#F59E0B' : '#EF4444';
+                    const color = index < 4 ? '#5FB57A' : index < 7 ? '#F59E0B' : '#EF4444';
                     return <Cell key={`bar-${index}`} fill={color} />;
                   })}
                 </Bar>
@@ -326,61 +311,53 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Row 2: Contract Risk & Tenure Risk Breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 20, marginBottom: 24 }}>
-        {/* Churn Rate by Contract Type (6 cols) */}
-        <div className="saas-card" style={{ gridColumn: 'span 12' }} className="lg:col-span-6 saas-card">
+      {/* ─── ROW 2: CONTRACT & TENURE COHORT RISK ──────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Contract Risk */}
+        <div className="lg:col-span-6 saas-card">
           <div className="saas-card-header">
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Churn Rate by Contract Term
-              </h3>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                Month-to-month contracts vs Multi-year commitments
-              </p>
+              <h3 className="text-sm font-bold text-[#111111]">Churn Rate by Contract Commitment</h3>
+              <p className="text-[11.5px] text-[#656565]">Month-to-month contracts vs multi-year agreements</p>
             </div>
           </div>
-          <div className="saas-card-body" style={{ height: 260 }}>
+          <div className="saas-card-body h-60">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={contractRisk} layout="vertical" margin={{ top: 10, right: 30, left: 30, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                <XAxis type="number" domain={[0, 60]} unit="%" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} />
-                <YAxis dataKey="contract" type="category" tick={{ fontSize: 11, fill: '#334155', fontWeight: 600 }} axisLine={false} />
+              <BarChart data={contractRisk} layout="vertical" margin={{ top: 10, right: 30, left: 20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#EBEBEA" />
+                <XAxis type="number" domain={[0, 60]} unit="%" tick={{ fontSize: 11, fill: '#656565' }} axisLine={false} />
+                <YAxis dataKey="contract" type="category" tick={{ fontSize: 11, fill: '#111111', fontWeight: 600 }} axisLine={false} />
                 <Tooltip
                   formatter={(val, name, item) => [`${val}% churn rate (${item.payload.churned} / ${item.payload.total} accounts)`, 'Churn Rate']}
-                  contentStyle={{ background: '#0F172A', borderRadius: 8, color: '#FFF', fontSize: 12 }}
+                  contentStyle={{ background: '#111111', border: '1px solid #333333', borderRadius: 8, color: '#FFF', fontSize: 12 }}
                 />
-                <Bar dataKey="churn_rate" name="Churn Rate %" fill="#DC2626" radius={[0, 4, 4, 0]} barSize={20} />
+                <Bar dataKey="churn_rate" name="Churn Rate %" fill="#EF4444" radius={[0, 4, 4, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Churn Rate by Tenure Group (6 cols) */}
-        <div className="saas-card" style={{ gridColumn: 'span 12' }} className="lg:col-span-6 saas-card">
+        {/* Tenure Risk */}
+        <div className="lg:col-span-6 saas-card">
           <div className="saas-card-header">
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Churn Rate by Tenure Cohort
-              </h3>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                Onboarding vulnerability window vs mature account loyalty
-              </p>
+              <h3 className="text-sm font-bold text-[#111111]">Churn Rate by Tenure Cohort</h3>
+              <p className="text-[11.5px] text-[#656565]">Onboarding vulnerability window vs mature loyalty</p>
             </div>
           </div>
-          <div className="saas-card-body" style={{ height: 260 }}>
+          <div className="saas-card-body h-60">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tenureRisk} margin={{ top: 10, right: 15, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                <XAxis dataKey="tenure_group" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} />
-                <YAxis unit="%" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#EBEBEA" />
+                <XAxis dataKey="tenure_group" tick={{ fontSize: 11, fill: '#656565' }} axisLine={false} />
+                <YAxis unit="%" tick={{ fontSize: 11, fill: '#656565' }} axisLine={false} />
                 <Tooltip
                   formatter={(val, name, item) => [`${val}% churn rate (${item.payload.churned} / ${item.payload.total} accounts)`, 'Churn Rate']}
-                  contentStyle={{ background: '#0F172A', borderRadius: 8, color: '#FFF', fontSize: 12 }}
+                  contentStyle={{ background: '#111111', border: '1px solid #333333', borderRadius: 8, color: '#FFF', fontSize: 12 }}
                 />
                 <Bar dataKey="churn_rate" name="Churn Rate %" radius={[4, 4, 0, 0]} barSize={28}>
                   {tenureRisk.map((entry, index) => (
-                    <Cell key={`cell-tenure-${index}`} fill={index === 0 ? '#DC2626' : index === 1 ? '#F59E0B' : '#10B981'} />
+                    <Cell key={`cell-tenure-${index}`} fill={index === 0 ? '#EF4444' : index === 1 ? '#F59E0B' : '#5FB57A'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -389,38 +366,27 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Urgent Action Queue Preview */}
-      <div className="saas-card">
+      {/* ─── URGENT RETENTION QUEUE ─────────────────────────────────── */}
+      <div className="saas-card overflow-hidden">
         <div className="saas-card-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <AlertTriangle style={{ width: 18, height: 18, color: '#DC2626' }} />
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-red-600" />
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Urgent High-Value Retention Queue
-              </h3>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                Top critical accounts requiring immediate customer success intervention
-              </p>
+              <h3 className="text-sm font-bold text-[#111111]">Urgent High-Value Retention Queue</h3>
+              <p className="text-[11.5px] text-[#656565]">Top critical accounts requiring immediate customer success intervention</p>
             </div>
           </div>
 
           <Link
             to="/customers"
-            style={{
-              fontSize: 12.5,
-              fontWeight: 700,
-              color: '#2563EB',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
+            className="text-xs font-bold text-[#111111] hover:text-[#5FB57A] flex items-center gap-1 transition-colors"
           >
-            View Full Customer Directory <ArrowRight style={{ width: 14, height: 14 }} />
+            <span>Customer Directory</span>
+            <ArrowRight className="w-3.5 h-3.5 text-[#5FB57A]" />
           </Link>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
+        <div className="overflow-x-auto">
           <table className="saas-table">
             <thead>
               <tr>
@@ -430,13 +396,13 @@ export default function DashboardPage() {
                 <th>Monthly MRR</th>
                 <th>Contract</th>
                 <th>Recommended Action</th>
-                <th style={{ textAlign: 'right' }}>Workflow</th>
+                <th className="text-right">Action</th>
               </tr>
             </thead>
             <tbody>
               {urgentQueue.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '30px', color: '#64748B' }}>
+                  <td colSpan={7} className="text-center py-8 text-xs text-[#8E8E8A]">
                     No urgent high-risk accounts currently pending review.
                   </td>
                 </tr>
@@ -445,7 +411,7 @@ export default function DashboardPage() {
                   const prob = item.churn_probability ?? item.probability ?? 0.78;
                   return (
                     <tr key={item.id || item.customer_id}>
-                      <td style={{ fontWeight: 700, color: '#0F172A' }}>
+                      <td className="font-bold text-[#111111]">
                         {item.customer_id || `CG-${item.id}`}
                       </td>
                       <td>
@@ -454,30 +420,20 @@ export default function DashboardPage() {
                           HIGH RISK
                         </span>
                       </td>
-                      <td style={{ fontWeight: 700, color: '#DC2626' }}>
+                      <td className="font-bold text-red-600 font-mono">
                         {(prob * 100).toFixed(1)}%
                       </td>
-                      <td style={{ fontWeight: 600 }}>${Number(item.monthly_charges || 95.5).toFixed(2)}</td>
-                      <td>{item.contract || 'Month-to-month'}</td>
-                      <td style={{ color: '#2563EB', fontWeight: 600 }}>
+                      <td className="font-semibold text-[#111111]">
+                        ${Number(item.monthly_charges || 95.5).toFixed(2)}
+                      </td>
+                      <td className="text-xs text-[#656565]">{item.contract || 'Month-to-month'}</td>
+                      <td className="text-xs font-semibold text-[#111111]">
                         {item.recommended_action || 'Offer Annual Plan Migration'}
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td className="text-right">
                         <Link
                           to={`/predict?customer_id=${item.customer_id || ''}`}
-                          style={{
-                            background: '#EFF6FF',
-                            border: '1px solid #BFDBFE',
-                            color: '#1D4ED8',
-                            padding: '4px 10px',
-                            borderRadius: 4,
-                            fontSize: 12,
-                            fontWeight: 700,
-                            textDecoration: 'none',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 4,
-                          }}
+                          className="btn-secondary py-1 px-3 text-xs"
                         >
                           Simulate & Inspect
                         </Link>

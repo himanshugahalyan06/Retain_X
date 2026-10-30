@@ -28,7 +28,12 @@ from churnguard.database.models import (
     ManagerLog
 )
 from churnguard.services.retention_service import RetentionService
-from churnguard.auth.dependencies import get_current_active_user
+from churnguard.auth.dependencies import (
+    get_current_active_user,
+    require_manager,
+    require_admin,
+    log_audit_event
+)
 
 router = APIRouter()
 
@@ -66,7 +71,7 @@ def recommend(
 def approve_decision(
     id: int,
     req: ManagerActionRequest = ManagerActionRequest(),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ):
     service = RetentionService(db_session=db)
@@ -85,7 +90,7 @@ def approve_decision(
 def reject_decision(
     id: int,
     req: ManagerActionRequest = ManagerActionRequest(),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ):
     service = RetentionService(db_session=db)
@@ -105,7 +110,7 @@ def reject_decision(
 def override_decision(
     id: int,
     req: ManagerActionRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ):
     service = RetentionService(db_session=db)
@@ -143,7 +148,7 @@ def get_interventions(
 @router.post("/v1/retention/interventions", response_model=InterventionResponse)
 def create_intervention(
     req: InterventionRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     if req.cost < 0:
@@ -163,6 +168,18 @@ def create_intervention(
     db.add(inter)
     db.commit()
     db.refresh(inter)
+
+    log_audit_event(
+        db=db,
+        company_id=current_user.company_id,
+        user_id=current_user.id,
+        user_email=current_user.email,
+        action="INTERVENTION_CREATED",
+        resource_type="INTERVENTION",
+        resource_id=str(inter.id),
+        details={"name": inter.name, "cost": inter.cost}
+    )
+
     return inter
 
 @router.put("/retention/interventions/{id}", response_model=InterventionResponse)
@@ -170,7 +187,7 @@ def create_intervention(
 def update_intervention(
     id: int,
     req: InterventionRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     inter = db.query(Intervention).filter(
@@ -198,7 +215,7 @@ def update_intervention(
 @router.delete("/v1/retention/interventions/{id}")
 def delete_intervention(
     id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     inter = db.query(Intervention).filter(
@@ -369,7 +386,7 @@ def get_settings(
 @router.post("/v1/retention/settings")
 def update_settings(
     req: BusinessSettingsRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     settings = db.query(BusinessSettings).filter(
@@ -391,12 +408,23 @@ def update_settings(
     
     db.commit()
     db.refresh(settings)
+
+    log_audit_event(
+        db=db,
+        company_id=current_user.company_id,
+        user_id=current_user.id,
+        user_email=current_user.email,
+        action="SETTINGS_UPDATED",
+        resource_type="BUSINESS_SETTINGS",
+        details={"fp_cost": req.false_positive_cost, "fn_cost": req.false_negative_cost}
+    )
+
     return settings
 
 @router.post("/retention/recalculate-threshold")
 @router.post("/v1/retention/recalculate-threshold")
 def recalculate_threshold_endpoint(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """

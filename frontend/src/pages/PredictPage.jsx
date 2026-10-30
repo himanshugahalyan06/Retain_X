@@ -28,8 +28,8 @@ function TermTooltip({ term }) {
   const explanation = TERMS_GLOSSARY[term] || 'Technical model metric.';
   return (
     <span className="tooltip-container" style={{ cursor: 'help', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-      <span style={{ borderBottom: '1px dotted #64748B' }}>{term}</span>
-      <Info style={{ width: 12, height: 12, color: '#2D6A4F' }} />
+      <span className="border-b border-dotted border-[#8E8E8A]">{term}</span>
+      <Info className="w-3 h-3 text-[#5FB57A]" />
       <span className="tooltip-text">
         <strong>{term}</strong>: {explanation}
       </span>
@@ -150,33 +150,29 @@ function ProbabilityGauge({ probability }) {
   const circ = 2 * Math.PI * radius;
   const strokeDash = (pct / 100) * circ;
   
-  const color = pct >= 70 ? '#E07A5F' : pct >= 40 ? '#D4A373' : '#2D6A4F';
-  const bgBadge = pct >= 70 ? 'rgba(224,122,95,0.12)' : pct >= 40 ? 'rgba(212,163,115,0.18)' : '#D8F3DC';
-  const borderBadge = pct >= 70 ? 'rgba(224,122,95,0.35)' : pct >= 40 ? 'rgba(212,163,115,0.4)' : 'rgba(45,106,79,0.3)';
+  const color = pct >= 70 ? '#EF4444' : pct >= 40 ? '#F59E0B' : '#5FB57A';
+  const bgBadge = pct >= 70 ? '#FEF2F2' : pct >= 40 ? '#FFFBEB' : '#EBF7EF';
+  const borderBadge = pct >= 70 ? '#FECACA' : pct >= 40 ? '#FDE68A' : '#A6DCB8';
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      background: bgBadge, borderRadius: 18, padding: '20px 24px',
-      border: `1px solid ${borderBadge}`, width: '100%'
-    }}>
-      <div style={{ position: 'relative', width: 140, height: 140 }}>
-        <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(15,23,42,0.08)" strokeWidth="10" />
+    <div className="w-full flex flex-col items-center rounded-2xl p-5 border" style={{ background: bgBadge, borderColor: borderBadge }}>
+      <div className="relative w-36 h-36">
+        <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(17,17,17,0.08)" strokeWidth="10" />
           <circle
             cx="60" cy="60" r={radius} fill="none"
             stroke={color} strokeWidth="10"
             strokeDasharray={`${strokeDash} ${circ}`}
             strokeLinecap="round"
-            style={{ transition: 'stroke-dasharray 1s ease' }}
+            className="transition-all duration-1000 ease-out"
           />
         </svg>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 36, fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{pct}%</span>
-          <span style={{ fontSize: 11, fontWeight: 800, color, marginTop: 2 }}>CHURN RISK</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-4xl font-black text-[#111111] font-display leading-none">{pct}%</span>
+          <span className="text-[11px] font-extrabold mt-1 uppercase" style={{ color }}>CHURN RISK</span>
         </div>
       </div>
-      <div style={{ marginTop: 12, fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <div className="mt-3 text-[11px] font-bold text-[#656565] uppercase tracking-wider">
         <TermTooltip term="Churn Probability" />
       </div>
     </div>
@@ -193,7 +189,7 @@ export default function PredictPage() {
   const { addEntry } = useHistory();
 
   useEffect(() => {
-    document.title = 'ML Analyst Workstation — RetainX';
+    document.title = 'Risk Scoring & What-If Studio — Retain X';
   }, []);
 
   const handleChange = (e) => {
@@ -224,7 +220,7 @@ export default function PredictPage() {
       addEntry(formData, predRes.data, expRes.data);
     } catch (err) {
       console.error(err);
-      setError('Could not reach the prediction API. Ensure FastAPI backend is running on http://localhost:8000.');
+      setError('Could not reach the prediction API. Ensure FastAPI backend is online.');
     } finally {
       setLoading(false);
     }
@@ -242,71 +238,59 @@ export default function PredictPage() {
     ? shapData.map((item) => ({
         name: formatFeature(item.Feature),
         value: parseFloat(item.SHAP),
-        fill: item.SHAP > 0 ? '#DC2626' : '#059669',
+        fill: item.SHAP > 0 ? '#EF4444' : '#5FB57A',
       }))
     : [];
 
   return (
-    <div style={{ maxWidth: 1440, margin: '0 auto', padding: '24px' }}>
-      
+    <div className="space-y-6">
       {/* Workstation Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+          <h1 className="text-2xl font-black text-[#111111] font-display tracking-tight">
             Customer Risk Scoring & Decision Workstation
           </h1>
-          <p style={{ fontSize: 13, color: '#64748B', marginTop: 3, marginBottom: 0 }}>
+          <p className="text-xs text-[#656565] mt-1">
             Evaluate individual churn risk probabilities, analyze local <TermTooltip term="SHAP" /> drivers, and simulate retention scenarios.
           </p>
         </div>
 
         {prediction && (
-          <button onClick={reset} className="btn-secondary" style={{ fontSize: 12.5 }}>
-            <RotateCcw style={{ width: 14, height: 14 }} />
-            Score New Profile
+          <button onClick={reset} className="btn-secondary py-2 px-3 text-xs font-bold flex items-center gap-1.5 self-start">
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Score New Profile</span>
           </button>
         )}
       </div>
 
       {/* Preset Profiles Bar */}
-      <div className="saas-card" style={{ padding: '14px 16px', marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-          <Sparkles style={{ width: 15, height: 15, color: '#2563EB' }} />
-          <span style={{ fontSize: 12.5, fontWeight: 700, color: '#0F172A' }}>1-Click Analyst Preset Profiles</span>
+      <div className="saas-card p-4">
+        <div className="flex items-center gap-2 mb-2.5">
+          <Sparkles className="w-4 h-4 text-[#5FB57A]" />
+          <span className="text-xs font-bold text-[#111111] uppercase tracking-wider">1-Click Test Archetypes</span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 10 }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {PRESETS.map((p, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => handleApplyPreset(p.data)}
-              style={{
-                textAlign: 'left',
-                background: '#F8FAFC',
-                padding: '10px 12px',
-                borderRadius: 8,
-                border: '1px solid #E2E8F0',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
-              className="hover:border-blue-500"
+              className="text-left bg-[#F3F3F1] hover:bg-white p-3 rounded-xl border border-[#D8D8D5] hover:border-[#111111] transition-all cursor-pointer"
             >
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#0F172A' }}>{p.name}</div>
-              <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.desc}</div>
+              <div className="text-xs font-bold text-[#111111]">{p.name}</div>
+              <div className="text-[11px] text-[#656565] mt-1 line-clamp-1">{p.desc}</div>
             </button>
           ))}
         </div>
       </div>
 
       {/* MAIN TWO-COLUMN WORKSTATION LAYOUT */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 20, alignItems: 'start' }}>
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* ── LEFT COLUMN: CUSTOMER PROFILE FORM ──────────────────── */}
-        <div style={{ gridColumn: 'span 12' }} className="lg:col-span-7">
-          <div className="saas-card" style={{ padding: 20 }}>
-            
+        <div className="lg:col-span-7">
+          <div className="saas-card p-6">
             {/* Form Step Nav Tabs */}
-            <div style={{ display: 'flex', gap: 6, marginBottom: 20, borderBottom: '1px solid #E2E8F0', paddingBottom: 12 }}>
+            <div className="flex gap-2 mb-6 border-b border-[#D8D8D5] pb-3">
               {SECTIONS.map((sec, idx) => {
                 const Icon = sec.icon;
                 const active = activeStep === idx;
@@ -315,40 +299,33 @@ export default function PredictPage() {
                     key={sec.id}
                     type="button"
                     onClick={() => setActiveStep(idx)}
-                    style={{
-                      flex: 1,
-                      display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
-                      padding: '8px 10px',
-                      borderRadius: 6,
-                      background: active ? '#EFF6FF' : '#F8FAFC',
-                      border: `1px solid ${active ? '#BFDBFE' : '#E2E8F0'}`,
-                      color: active ? '#1D4ED8' : '#64748B',
-                      fontWeight: active ? 700 : 500,
-                      fontSize: 12,
-                      cursor: 'pointer',
-                    }}
+                    className={`flex-1 flex items-center gap-2 justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all ${
+                      active
+                        ? 'bg-[#111111] text-white shadow-sm'
+                        : 'bg-[#F3F3F1] text-[#656565] hover:text-[#111111] border border-[#D8D8D5]'
+                    }`}
                   >
-                    <Icon style={{ width: 14, height: 14 }} />
-                    {sec.num} {sec.title.split(' ')[0]}
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{sec.num}. {sec.title.split(' ')[0]}</span>
                   </button>
                 );
               })}
             </div>
 
             {/* Current Form Step Content */}
-            <div>
-              <div style={{ marginBottom: 20 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            <div className="mb-6">
+              <div className="mb-4">
+                <h3 className="text-base font-bold text-[#111111]">
                   {SECTIONS[activeStep].num}. {SECTIONS[activeStep].title}
                 </h3>
-                <p style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
+                <p className="text-xs text-[#656565] mt-0.5">
                   {SECTIONS[activeStep].subtitle}
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {SECTIONS[activeStep].fields.map((field) => (
-                  <div key={field.name} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div key={field.name} className="flex flex-col gap-1">
                     <label className="form-label">{field.label}</label>
                     {field.type === 'select' ? (
                       <select
@@ -377,7 +354,7 @@ export default function PredictPage() {
                       />
                     )}
                     {field.hint && (
-                      <span style={{ fontSize: 11, color: '#94A3B8' }}>{field.hint}</span>
+                      <span className="text-[10.5px] text-[#8E8E8A]">{field.hint}</span>
                     )}
                   </div>
                 ))}
@@ -385,123 +362,124 @@ export default function PredictPage() {
             </div>
 
             {error && (
-              <div style={{ margin: '0 0 20px', padding: '12px 16px', background: 'rgba(224,122,95,0.12)', border: '1px solid rgba(224,122,95,0.3)', borderRadius: 10, color: '#991B1B', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
-                {error}
+              <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
             {/* Step Controls */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid #F0EBDD' }}>
+            <div className="flex justify-between items-center pt-4 border-t border-[#D8D8D5]">
               <button
                 type="button"
                 onClick={() => setActiveStep((s) => Math.max(0, s - 1))}
                 disabled={activeStep === 0}
-                className="btn-secondary"
-                style={{ opacity: activeStep === 0 ? 0.4 : 1, fontSize: 13 }}
+                className="btn-secondary py-2 px-4 text-xs font-bold"
               >
-                <ChevronLeft style={{ width: 16, height: 16 }} /> Previous Section
+                <ChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
               </button>
 
               {activeStep < 2 ? (
                 <button
                   type="button"
                   onClick={() => setActiveStep((s) => Math.min(2, s + 1))}
-                  className="btn-primary"
-                  style={{ fontSize: 13 }}
+                  className="btn-primary py-2 px-4 text-xs font-bold"
                 >
-                  Next Section <ChevronRight style={{ width: 16, height: 16 }} />
+                  <span>Next Section</span>
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="btn-primary"
-                  style={{ fontSize: 14, padding: '12px 28px' }}
+                  className="btn-ink py-2.5 px-6 text-xs font-bold flex items-center gap-2"
                 >
-                  {loading ? 'Evaluating Model…' : 'Run Risk Assessment'}
-                  <Zap style={{ width: 16, height: 16 }} />
+                  <Zap className="w-4 h-4 text-[#5FB57A]" />
+                  <span>{loading ? 'Evaluating Model…' : 'Run Risk Assessment'}</span>
                 </button>
               )}
             </div>
-
           </div>
         </div>
 
         {/* ── RIGHT COLUMN: RISK INTELLIGENCE PANEL ───────────────── */}
-        <div style={{ gridColumn: 'span 12' }} className="lg:col-span-5">
+        <div className="lg:col-span-5 space-y-5">
           {!prediction ? (
             /* Calm Empty State */
-            <div className="saas-card" style={{ padding: 32, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ShieldCheck style={{ width: 24, height: 24, color: '#2563EB' }} />
+            <div className="saas-card p-8 text-center flex flex-col items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#F3F3F1] border border-[#D8D8D5] flex items-center justify-center text-[#5FB57A]">
+                <ShieldCheck className="w-6 h-6" />
               </div>
               <div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                <h3 className="text-base font-bold text-[#111111]">
                   Ready to assess customer risk
                 </h3>
-                <p style={{ fontSize: 13, color: '#64748B', marginTop: 4, lineHeight: 1.4, maxWidth: 300 }}>
-                  Select a preset profile or enter custom attributes, then click <strong>Run Risk Assessment</strong> to compute calibrated churn probability.
+                <p className="text-xs text-[#656565] mt-1 leading-relaxed max-w-xs mx-auto">
+                  Select an archetype or customize fields, then click <strong>Run Risk Assessment</strong> to compute calibrated churn probability.
                 </p>
               </div>
-              <div style={{ background: '#F8FAFC', borderRadius: 8, padding: 12, border: '1px solid #E2E8F0', width: '100%', textAlign: 'left', fontSize: 11.5, color: '#334155' }}>
-                <div style={{ fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>Workstation Specifications:</div>
-                <div>• Model: Cost-Sensitive Random Forest (AUC 94.2%)</div>
-                <div>• Optimization: Asymmetric Loss Matrix Threshold Tuning</div>
-                <div>• Local Explainability: SHAP Exact Feature Attribution</div>
+              <div className="bg-[#F3F3F1] rounded-xl p-4 border border-[#D8D8D5] w-full text-left text-xs text-[#656565] space-y-1">
+                <div className="font-bold text-[#111111]">Inference Pipeline:</div>
+                <div>• Calibrated Random Forest / XGBoost</div>
+                <div>• Cost-sensitive optimal cutoff applied</div>
+                <div>• Exact SHAP tree feature attribution</div>
               </div>
             </div>
           ) : (
             /* Active Prediction Results Panel */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              
+            <div className="space-y-5">
               {/* Gauge Card */}
-              <div className="saas-card" style={{ padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+              <div className="saas-card p-5 flex flex-col items-center gap-4">
                 <ProbabilityGauge probability={prediction.probability ?? prediction.risk?.churn_probability ?? 0.0} />
 
-                <div style={{
-                  width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 13, fontWeight: 700, textAlign: 'center',
-                  background: (prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '#FEF2F2' : '#ECFDF5',
-                  border: `1px solid ${(prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '#FECACA' : '#A7F3D0'}`,
-                  color: (prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '#991B1B' : '#065F46'
-                }}>
-                  {(prediction.prediction === 1 || prediction.risk?.churn_probability >= (prediction.threshold ?? 0.10)) ? '⚠️ High Churn Risk Flagged' : '✓ Customer Retention Stable'}
+                <div className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold text-center border ${
+                  (prediction.prediction === 1 || (prediction.probability ?? 0) >= (prediction.threshold ?? 0.10))
+                    ? 'bg-red-50 border-red-200 text-red-800'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                }`}>
+                  {(prediction.prediction === 1 || (prediction.probability ?? 0) >= (prediction.threshold ?? 0.10))
+                    ? '⚠️ High Churn Risk Flagged'
+                    : '✓ Customer Retention Stable'}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, width: '100%', fontSize: 12 }}>
-                  <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
-                    <div style={{ color: '#64748B', fontWeight: 600 }}>Decision Cutoff</div>
-                    <div style={{ fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{Number(prediction.threshold ?? prediction.risk?.threshold ?? 0.10).toFixed(2)}</div>
+                <div className="grid grid-cols-2 gap-3 w-full text-xs">
+                  <div className="bg-[#F3F3F1] p-3 rounded-xl border border-[#D8D8D5]">
+                    <div className="text-[#656565] font-semibold">Decision Cutoff</div>
+                    <div className="font-black text-[#111111] text-base font-display mt-0.5">
+                      {Number(prediction.threshold ?? 0.42).toFixed(2)}
+                    </div>
                   </div>
-                  <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
-                    <div style={{ color: '#64748B', fontWeight: 600 }}>Estimated CLV</div>
-                    <div style={{ fontWeight: 800, color: '#0F172A', marginTop: 2 }}>${Number(prediction.customer_value ?? prediction.economics?.estimated_economic_value ?? 0).toLocaleString()}</div>
+                  <div className="bg-[#F3F3F1] p-3 rounded-xl border border-[#D8D8D5]">
+                    <div className="text-[#656565] font-semibold">Estimated CLV</div>
+                    <div className="font-black text-[#111111] text-base font-display mt-0.5">
+                      ${Number(prediction.customer_value ?? prediction.economics?.estimated_economic_value ?? 1250).toLocaleString()}
+                    </div>
                   </div>
                 </div>
               </div>
 
-
               {/* SHAP Chart Panel */}
-              <div className="saas-card" style={{ padding: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+              <div className="saas-card p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-[#111111]">
                     SHAP Feature Drivers
                   </h3>
-                  <div style={{ display: 'flex', gap: 8, fontSize: 11, fontWeight: 600 }}>
-                    <span style={{ color: '#DC2626' }}>↑ Higher risk</span>
-                    <span style={{ color: '#059669' }}>↓ Lower risk</span>
+                  <div className="flex gap-3 text-[11px] font-bold">
+                    <span className="text-red-600">↑ Risk</span>
+                    <span className="text-[#5FB57A]">↓ Protective</span>
                   </div>
                 </div>
-                
+
                 {chartData.length > 0 ? (
-                  <div style={{ height: 220 }}>
+                  <div className="h-56">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
                         <XAxis type="number" hide domain={['dataMin', 'dataMax']} />
-                        <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={130} tick={{ fill: '#334155', fontSize: 11, fontWeight: 600 }} />
-                        <Tooltip contentStyle={{ borderRadius: 6, background: '#0F172A', color: '#FFF', fontSize: 12 }} />
-                        <ReferenceLine x={0} stroke="#E2E8F0" strokeWidth={1} />
+                        <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={130} tick={{ fill: '#111111', fontSize: 11, fontWeight: 600 }} />
+                        <Tooltip contentStyle={{ borderRadius: 8, background: '#111111', border: '1px solid #333333', color: '#FFF', fontSize: 12 }} />
+                        <ReferenceLine x={0} stroke="#D8D8D5" strokeWidth={1} />
                         <Bar dataKey="value" radius={[3, 3, 3, 3]} barSize={12}>
                           {chartData.map((entry, i) => (
                             <Cell key={i} fill={entry.fill} />
@@ -511,7 +489,9 @@ export default function PredictPage() {
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <div style={{ textAlign: 'center', color: '#94A3B8', padding: 20, fontSize: 12 }}>No SHAP drivers calculated.</div>
+                  <div className="text-center text-[#8E8E8A] py-6 text-xs">
+                    No SHAP drivers calculated.
+                  </div>
                 )}
               </div>
 
@@ -523,16 +503,14 @@ export default function PredictPage() {
               />
 
               {/* View in Directory Link */}
-              <Link to="/customers" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '10px 14px', textDecoration: 'none' }}>
-                View in Customer Intelligence Directory <ArrowUpRight style={{ width: 15, height: 15 }} />
+              <Link to="/customers" className="w-full btn-ink py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2">
+                <span>View in Customer Intelligence Directory</span>
+                <ArrowRight className="w-4 h-4 text-[#5FB57A]" />
               </Link>
-
             </div>
           )}
         </div>
-
       </div>
-
     </div>
   );
 }

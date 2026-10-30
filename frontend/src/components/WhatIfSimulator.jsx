@@ -208,19 +208,20 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#D8F3DC',
+              background: 'rgba(95, 181, 122, 0.15)',
+              border: '1px solid rgba(95, 181, 122, 0.3)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <SlidersHorizontal style={{ width: 16, height: 16, color: '#1B4332' }} />
+            <SlidersHorizontal style={{ width: 16, height: 16, color: '#5FB57A' }} />
           </div>
           <div>
-            <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 800, color: '#111111', margin: 0 }}>
               What-If Scenario Simulator
             </h3>
-            <p style={{ fontSize: 11.5, color: '#64748B', margin: 0 }}>
+            <p style={{ fontSize: 11.5, color: '#656565', margin: 0 }}>
               Live sensitivity analysis on Top {topFeatureKeys.length} SHAP risk drivers
             </p>
           </div>
@@ -232,11 +233,12 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: '#2D6A4F',
+                color: '#111111',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                background: '#D8F3DC',
+                background: 'rgba(95, 181, 122, 0.15)',
+                border: '1px solid rgba(95, 181, 122, 0.3)',
                 padding: '3px 8px',
                 borderRadius: 9999,
               }}
@@ -257,9 +259,9 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
               fontWeight: 700,
               padding: '4px 8px',
               borderRadius: 6,
-              background: '#F7F4EF',
-              border: '1px solid rgba(212,163,115,0.3)',
-              color: '#64748B',
+              background: '#F3F3F1',
+              border: '1px solid #D8D8D5',
+              color: '#656565',
               cursor: 'pointer',
             }}
           >
@@ -272,8 +274,8 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
       {/* Live Probability Comparison Banner */}
       <div
         style={{
-          background: isReduced ? 'rgba(216, 243, 220, 0.45)' : isIncreased ? 'rgba(254, 226, 226, 0.45)' : '#F8FAFC',
-          border: `1px solid ${isReduced ? 'rgba(45, 106, 79, 0.3)' : isIncreased ? 'rgba(224, 122, 95, 0.35)' : '#E2E8F0'}`,
+          background: isReduced ? 'rgba(95, 181, 122, 0.1)' : isIncreased ? 'rgba(239, 68, 68, 0.08)' : '#F3F3F1',
+          border: `1px solid ${isReduced ? 'rgba(95, 181, 122, 0.3)' : isIncreased ? '#FECACA' : '#D8D8D5'}`,
           borderRadius: 12,
           padding: '14px 16px',
           marginBottom: 20,
@@ -281,10 +283,10 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#656565', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Baseline Risk
             </div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: '#0F172A' }}>
+            <div style={{ fontSize: 20, fontWeight: 900, color: '#111111' }}>
               {(originalProbability * 100).toFixed(1)}%
             </div>
           </div>
@@ -299,8 +301,9 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
                 borderRadius: 9999,
                 fontSize: 12,
                 fontWeight: 800,
-                background: isReduced ? '#D8F3DC' : isIncreased ? '#FEE2E2' : '#E2E8F0',
-                color: isReduced ? '#1B4332' : isIncreased ? '#991B1B' : '#475569',
+                background: isReduced ? 'rgba(95, 181, 122, 0.15)' : isIncreased ? 'rgba(239, 68, 68, 0.12)' : '#EBEBEA',
+                color: isReduced ? '#111111' : isIncreased ? '#EF4444' : '#656565',
+                border: `1px solid ${isReduced ? 'rgba(95, 181, 122, 0.3)' : isIncreased ? '#FECACA' : '#D8D8D5'}`,
               }}
             >
               {isReduced ? <ArrowDownRight style={{ width: 14, height: 14 }} /> : isIncreased ? <ArrowUpRight style={{ width: 14, height: 14 }} /> : <Minus style={{ width: 14, height: 14 }} />}
@@ -309,14 +312,14 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
           </div>
 
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#656565', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Simulated Risk
             </div>
             <div
               style={{
                 fontSize: 20,
                 fontWeight: 900,
-                color: isReduced ? '#1B4332' : isIncreased ? '#991B1B' : '#0F172A',
+                color: isReduced ? '#5FB57A' : isIncreased ? '#EF4444' : '#111111',
               }}
             >
               {(simProb * 100).toFixed(1)}%
@@ -325,7 +328,7 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
         </div>
 
         {/* Progress Visualizer */}
-        <div style={{ width: '100%', height: 6, background: '#E2E8F0', borderRadius: 9999, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ width: '100%', height: 6, background: '#D8D8D5', borderRadius: 9999, overflow: 'hidden', position: 'relative' }}>
           <div
             style={{
               position: 'absolute',
@@ -333,14 +336,14 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
               top: 0,
               bottom: 0,
               width: `${Math.min(100, Math.max(0, simProb * 100))}%`,
-              background: simProb >= 0.5 ? '#E07A5F' : '#2D6A4F',
+              background: simProb >= 0.5 ? '#EF4444' : '#5FB57A',
               transition: 'width 0.3s ease, background 0.3s ease',
             }}
           />
         </div>
 
         {simResult?.summary && (
-          <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: isReduced ? '#1B4332' : isIncreased ? '#991B1B' : '#475569' }}>
+          <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: isReduced ? '#111111' : isIncreased ? '#EF4444' : '#656565' }}>
             💡 {simResult.summary}
           </div>
         )}
@@ -364,22 +367,23 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
             <div
               key={key}
               style={{
-                background: '#FBF9F6',
+                background: '#F3F3F1',
                 padding: '12px 14px',
                 borderRadius: 10,
-                border: '1px solid rgba(212,163,115,0.2)',
+                border: '1px solid #D8D8D5',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <label style={{ fontSize: 12.5, fontWeight: 700, color: '#1E293B' }}>
+                <label style={{ fontSize: 12.5, fontWeight: 700, color: '#111111' }}>
                   {cfg.label}
                 </label>
                 <span
                   style={{
                     fontSize: 12,
                     fontWeight: 800,
-                    color: '#1B4332',
-                    background: '#D8F3DC',
+                    color: '#111111',
+                    background: 'rgba(95, 181, 122, 0.15)',
+                    border: '1px solid rgba(95, 181, 122, 0.3)',
                     padding: '2px 8px',
                     borderRadius: 6,
                   }}
@@ -399,11 +403,11 @@ export default function WhatIfSimulator({ customerData, originalProbability, sha
                     onChange={(e) => handleValueChange(key, parseFloat(e.target.value))}
                     style={{
                       width: '100%',
-                      accentColor: '#2D6A4F',
+                      accentColor: '#5FB57A',
                       cursor: 'pointer',
                     }}
                   />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#656565', marginTop: 2 }}>
                     <span>{cfg.unit === '$' ? `$${cfg.min}` : `${cfg.min} ${cfg.unit || ''}`}</span>
                     <span>{cfg.hint}</span>
                     <span>{cfg.unit === '$' ? `$${cfg.max}` : `${cfg.max} ${cfg.unit || ''}`}</span>

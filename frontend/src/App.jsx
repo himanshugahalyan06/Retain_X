@@ -1,12 +1,22 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Header from './components/Header';
+import AppLayout from './components/layout/AppLayout';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import { HistoryProvider } from './context/HistoryContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { Loader2 } from 'lucide-react';
 
-// Lazy-loaded route chunks
-const HomePage = lazy(() => import('./pages/HomePage'));
+// Main Landing Page (eager for instant first paint and instant return on signout)
+import HomePage from './pages/HomePage';
+
+// Lazy-loaded secondary route chunks
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
+const AcceptInvitePage = lazy(() => import('./pages/AcceptInvitePage'));
+const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
+
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const RetentionPage = lazy(() => import('./pages/RetentionPage'));
 const PredictPage = lazy(() => import('./pages/PredictPage'));
@@ -14,15 +24,16 @@ const CustomersPage = lazy(() => import('./pages/CustomersPage'));
 const InterventionsPage = lazy(() => import('./pages/InterventionsPage'));
 const HistoryPage = lazy(() => import('./pages/HistoryPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
 const DataModelStudioPage = lazy(() => import('./pages/DataModelStudioPage'));
 
 function PageLoader() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid #2563EB', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-        <p style={{ color: '#64748B', fontSize: 12.5, fontWeight: 600 }}>Loading view...</p>
+    <div className="min-h-[50vh] flex flex-col items-center justify-center">
+      <div className="p-6 bg-white border border-[#D8D8D5] rounded-2xl shadow-sm text-center space-y-2">
+        <Loader2 className="w-7 h-7 animate-spin text-[#5FB57A] mx-auto" />
+        <p className="text-xs font-bold text-[#111111] uppercase tracking-wider">
+          Loading View...
+        </p>
       </div>
     </div>
   );
@@ -30,76 +41,24 @@ function PageLoader() {
 
 function NotFoundPage() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center', padding: '0 16px' }}>
-      <div style={{ fontSize: 64, fontWeight: 900, color: '#CBD5E1', marginBottom: 8 }}>404</div>
-      <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>Page not found</h1>
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>The page you are looking for does not exist in this workspace.</p>
-      <a href="/dashboard" className="btn-primary">Return to Dashboard</a>
+    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+      <div className="font-display text-7xl text-[#D8D8D5] mb-2">404</div>
+      <h1 className="text-xl font-black text-[#111111] mb-2 font-display">Page Not Found</h1>
+      <p className="text-xs text-[#656565] mb-6 max-w-sm">
+        The workspace path you requested does not exist or has been relocated.
+      </p>
+      <a href="/dashboard" className="btn-ink text-xs py-2.5 px-5">
+        Return to Dashboard
+      </a>
     </div>
   );
 }
 
-function ProtectedLayout() {
-  const { isAuthenticated, loading } = useAuth();
-  const location = useLocation();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p style={{ color: '#64748B', fontSize: 13, fontWeight: 600 }}>Loading workspace session...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
-      {/* Fixed Left Sidebar */}
-      <Sidebar mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
-
-      {/* Main Workspace Layout (Offset by 250px on desktop) */}
-      <div className="lg:pl-[250px]" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        {/* Top Header */}
-        <Header onOpenMobile={() => setMobileOpen(true)} />
-
-        {/* Dynamic Route Content */}
-        <main style={{ flex: 1, paddingBottom: 40 }}>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="retention" element={<RetentionPage />} />
-              <Route path="data-models" element={<DataModelStudioPage />} />
-              <Route path="app/data-models" element={<DataModelStudioPage />} />
-              <Route path="predict" element={<PredictPage />} />
-              <Route path="customers" element={<CustomersPage />} />
-              <Route path="interventions" element={<InterventionsPage />} />
-              <Route path="history" element={<HistoryPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </main>
-      </div>
-    </div>
-  );
-}
-
-function LoginRoute() {
+function AuthRouteWrapper({ children }) {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
-  return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
-      <LoginPage />
-    </div>
-  );
+  return children;
 }
 
 export default function App() {
@@ -108,18 +67,81 @@ export default function App() {
       <HistoryProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            {/* Public Landing Page */}
+            {/* ─── PUBLIC LANDING & AUTHENTICATION ROUTES ──────────────── */}
             <Route path="/" element={<HomePage />} />
             
-            {/* Authentication Route */}
-            <Route path="/login" element={<LoginRoute />} />
+            <Route
+              path="/login"
+              element={
+                <AuthRouteWrapper>
+                  <LoginPage />
+                </AuthRouteWrapper>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <AuthRouteWrapper>
+                  <LoginPage />
+                </AuthRouteWrapper>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <AuthRouteWrapper>
+                  <ForgotPasswordPage />
+                </AuthRouteWrapper>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <AuthRouteWrapper>
+                  <ResetPasswordPage />
+                </AuthRouteWrapper>
+              }
+            />
+            <Route
+              path="/invite/accept"
+              element={<AcceptInvitePage />}
+            />
+            <Route
+              path="/verify-email"
+              element={<VerifyEmailPage />}
+            />
+            <Route
+              path="/unauthorized"
+              element={<UnauthorizedPage />}
+            />
 
-            {/* Protected Workspace Routes */}
-            <Route path="/*" element={<ProtectedLayout />} />
+            {/* ─── PROTECTED WORKSPACE ROUTES ─────────────────────────── */}
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<PageLoader />}>
+                      <Routes>
+                        <Route path="dashboard" element={<DashboardPage />} />
+                        <Route path="retention" element={<RetentionPage />} />
+                        <Route path="data-models" element={<DataModelStudioPage />} />
+                        <Route path="app/data-models" element={<DataModelStudioPage />} />
+                        <Route path="predict" element={<PredictPage />} />
+                        <Route path="customers" element={<CustomersPage />} />
+                        <Route path="interventions" element={<InterventionsPage />} />
+                        <Route path="history" element={<HistoryPage />} />
+                        <Route path="settings" element={<SettingsPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
+                      </Routes>
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </Suspense>
       </HistoryProvider>
     </AuthProvider>
   );
 }
-

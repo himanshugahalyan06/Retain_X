@@ -99,35 +99,36 @@ export default function RetentionPage() {
       {/* HEADER STRIP */}
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 800, color: '#2D6A4F', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            RETENTION INTELLIGENCE & DECISION CENTER 2.0
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 9999, background: 'rgba(95, 181, 122, 0.15)', color: '#111111', fontSize: 11, fontWeight: 800, border: '1px solid rgba(95, 181, 122, 0.3)', letterSpacing: '0.06em' }}>
+            <Zap style={{ width: 13, height: 13, color: '#5FB57A' }} />
+            RETENTION INTELLIGENCE & DECISION CENTER
           </div>
-          <h1 style={{ margin: '2px 0 0', fontSize: 28, fontWeight: 900, color: '#1B4332', letterSpacing: '-0.02em' }}>
+          <h1 className="font-display" style={{ margin: '6px 0 0', fontSize: 32, fontWeight: 900, color: '#111111', letterSpacing: '-0.02em' }}>
             Executive Retention Command Center
           </h1>
-          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#475569' }}>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#656565' }}>
             Turn customer churn risk into economically optimized retention actions.
           </p>
         </div>
 
         {/* Top-Level Status Indicators */}
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ background: '#FFFFFF', padding: '8px 14px', borderRadius: 10, border: '1px solid rgba(27,67,50,0.12)', fontSize: 11 }}>
-            <span style={{ color: '#64748B' }}>Model Status:</span> <strong style={{ color: '#2D6A4F' }}>Calibrated XGBoost (94.2% AUC)</strong>
+          <div style={{ background: '#FFFFFF', padding: '8px 14px', borderRadius: 10, border: '1px solid #D8D8D5', fontSize: 11 }}>
+            <span style={{ color: '#656565' }}>Model Status:</span> <strong style={{ color: '#5FB57A' }}>Calibrated XGBoost (94.2% AUC)</strong>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '8px 14px', borderRadius: 10, border: '1px solid rgba(27,67,50,0.12)', fontSize: 11 }}>
-            <span style={{ color: '#64748B' }}>Decision Queue:</span> <strong style={{ color: '#E07A5F' }}>184 Pending Review</strong>
+          <div style={{ background: '#FFFFFF', padding: '8px 14px', borderRadius: 10, border: '1px solid #D8D8D5', fontSize: 11 }}>
+            <span style={{ color: '#656565' }}>Decision Queue:</span> <strong style={{ color: '#EF4444' }}>184 Pending Review</strong>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '8px 14px', borderRadius: 10, border: '1px solid rgba(27,67,50,0.12)', fontSize: 11 }}>
-            <span style={{ color: '#64748B' }}>Budget Used:</span> <strong style={{ color: '#1B4332' }}>61.5% (₹61.5k / ₹100k)</strong>
+          <div style={{ background: '#FFFFFF', padding: '8px 14px', borderRadius: 10, border: '1px solid #D8D8D5', fontSize: 11 }}>
+            <span style={{ color: '#656565' }}>Budget Used:</span> <strong style={{ color: '#111111' }}>61.5% (₹61.5k / ₹100k)</strong>
           </div>
         </div>
       </div>
 
-      {/* 5 WORKSPACE NAVIGATION TABS */}
+      {/* 4 WORKSPACE NAVIGATION TABS */}
       <div style={{
-        display: 'flex', gap: 8, background: '#F0EBDD', padding: 4, borderRadius: 12, marginBottom: 24,
-        overflowX: 'auto'
+        display: 'flex', gap: 8, background: '#F3F3F1', padding: 4, borderRadius: 12, marginBottom: 24,
+        border: '1px solid #D8D8D5', overflowX: 'auto'
       }}>
         {[
           { id: 'overview', label: 'A. Executive Command Overview' },
@@ -141,9 +142,9 @@ export default function RetentionPage() {
             style={{
               padding: '10px 20px', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 800,
               cursor: 'pointer', transition: 'all 0.15s ease',
-              background: activeTab === tab.id ? '#1B4332' : 'transparent',
-              color: activeTab === tab.id ? '#FFFFFF' : '#475569',
-              boxShadow: activeTab === tab.id ? '0 2px 8px rgba(27,67,50,0.2)' : 'none'
+              background: activeTab === tab.id ? '#111111' : 'transparent',
+              color: activeTab === tab.id ? '#FFFFFF' : '#656565',
+              boxShadow: activeTab === tab.id ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
             }}
           >
             {tab.label}
@@ -159,77 +160,77 @@ export default function RetentionPage() {
           
           {/* PRIMARY KPI STRIP WITH VISUAL HIERARCHY */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-            {/* Primary Dominant Cards */}
-            <div className="card" style={{ background: '#1B4332', color: '#FFFFFF', padding: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#D8F3DC', textTransform: 'uppercase' }}>CUSTOMERS REQUIRING ACTION</div>
-              <div style={{ fontSize: 32, fontWeight: 900, marginTop: 4, color: '#FFFFFF' }}>{kpis?.customers_at_risk || 184}</div>
-              <div style={{ fontSize: 12, color: '#D8F3DC', marginTop: 4 }}>Priority decision candidates</div>
+            {/* Primary Dominant Card */}
+            <div className="saas-card" style={{ background: '#111111', color: '#FFFFFF', padding: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#5FB57A', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CUSTOMERS REQUIRING ACTION</div>
+              <div className="font-display" style={{ fontSize: 32, fontWeight: 900, marginTop: 4, color: '#FFFFFF' }}>{kpis?.customers_at_risk || 184}</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>Priority decision candidates</div>
             </div>
 
-            <div className="card" style={{ background: '#2D6A4F', color: '#FFFFFF', padding: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#D8F3DC', textTransform: 'uppercase' }}>EXPECTED NET VALUE (+EV)</div>
-              <div style={{ fontSize: 32, fontWeight: 900, marginTop: 4, color: '#FFFFFF' }}>₹18,450</div>
-              <div style={{ fontSize: 12, color: '#D8F3DC', marginTop: 4 }}>Net saved after intervention cost</div>
+            <div className="saas-card" style={{ padding: 20, background: '#FFFFFF' }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#656565', textTransform: 'uppercase', letterSpacing: '0.05em' }}>EXPECTED NET VALUE (+EV)</div>
+              <div className="font-display" style={{ fontSize: 30, fontWeight: 900, marginTop: 4, color: '#5FB57A' }}>₹18,450</div>
+              <div style={{ fontSize: 12, color: '#656565', marginTop: 4 }}>Net saved after intervention cost</div>
             </div>
 
             {/* Secondary Metric Cards */}
-            <div className="card" style={{ padding: 20, background: '#FFFFFF' }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>REVENUE AT RISK</div>
-              <div style={{ fontSize: 26, fontWeight: 900, color: '#E07A5F', marginTop: 4 }}>
+            <div className="saas-card" style={{ padding: 20, background: '#FFFFFF' }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#656565', textTransform: 'uppercase', letterSpacing: '0.05em' }}>REVENUE AT RISK</div>
+              <div className="font-display" style={{ fontSize: 28, fontWeight: 900, color: '#EF4444', marginTop: 4 }}>
                 ₹{Number(kpis?.expected_revenue_at_risk || 42600).toLocaleString()}
               </div>
-              <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>Across high-churn accounts</div>
+              <div style={{ fontSize: 12, color: '#656565', marginTop: 4 }}>Across high-churn accounts</div>
             </div>
 
-            <div className="card" style={{ padding: 20, background: '#FFFFFF' }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>PROJECTED INTERVENTION ROI</div>
-              <div style={{ fontSize: 26, fontWeight: 900, color: '#2D6A4F', marginTop: 4 }}>
+            <div className="saas-card" style={{ padding: 20, background: '#FFFFFF' }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#656565', textTransform: 'uppercase', letterSpacing: '0.05em' }}>PROJECTED INTERVENTION ROI</div>
+              <div className="font-display" style={{ fontSize: 28, fontWeight: 900, color: '#5FB57A', marginTop: 4 }}>
                 3.85× (385%)
               </div>
-              <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>Incremental return / cost</div>
+              <div style={{ fontSize: 12, color: '#656565', marginTop: 4 }}>Incremental return / cost</div>
             </div>
           </div>
 
           {/* VALUE × RISK MATRIX (SIGNATURE VISUALIZATION) */}
-          <div className="card" style={{ padding: 24, background: '#FFFFFF' }}>
+          <div className="saas-card" style={{ padding: 24, background: '#FFFFFF' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#1B4332' }}>
+                <h3 className="font-display" style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#111111' }}>
                   Strategic Value × Risk Intelligence Matrix
                 </h3>
-                <p style={{ margin: '2px 0 0', fontSize: 12, color: '#64748B' }}>
+                <p style={{ margin: '2px 0 0', fontSize: 12, color: '#656565' }}>
                   X-axis: Churn Probability (0–100%) | Y-axis: Customer Economic Value (CLV). Click any point to inspect Customer Intelligence Brief.
                 </p>
               </div>
-              <span style={{ fontSize: 11, background: '#D8F3DC', color: '#1B4332', padding: '4px 12px', borderRadius: 9999, fontWeight: 800 }}>
+              <span style={{ fontSize: 11, background: 'rgba(95,181,122,0.15)', color: '#111111', padding: '4px 12px', borderRadius: 9999, fontWeight: 800, border: '1px solid rgba(95,181,122,0.3)' }}>
                 High Value + High Risk = Priority Retention
               </span>
             </div>
 
             {/* Interactive SVG Scatter Visual */}
             <div style={{
-              width: '100%', height: '340px', background: '#F7F4EF', borderRadius: 12,
-              border: '1px solid #F0EBDD', position: 'relative', overflow: 'hidden'
+              width: '100%', height: '340px', background: '#F3F3F1', borderRadius: 12,
+              border: '1px solid #D8D8D5', position: 'relative', overflow: 'hidden'
             }}>
               {/* Quadrant Dividers & Labels */}
               <div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }}>
-                <div style={{ borderRight: '1px dashed #D4A373', borderBottom: '1px dashed #D4A373', padding: 12 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', background: 'rgba(255,255,255,0.7)', padding: '2px 6px', borderRadius: 4 }}>
+                <div style={{ borderRight: '1px dashed #D8D8D5', borderBottom: '1px dashed #D8D8D5', padding: 12 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#656565', background: 'rgba(255,255,255,0.85)', padding: '2px 8px', borderRadius: 4 }}>
                     HIGH VALUE / LOW RISK (Protect)
                   </span>
                 </div>
-                <div style={{ borderBottom: '1px dashed #D4A373', padding: 12, background: 'rgba(224,122,95,0.06)' }}>
-                  <span style={{ fontSize: 11, fontWeight: 900, color: '#991B1B', background: '#FFFFFF', padding: '4px 8px', borderRadius: 6, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                <div style={{ borderBottom: '1px dashed #D8D8D5', padding: 12, background: 'rgba(239,68,68,0.05)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 900, color: '#EF4444', background: '#FFFFFF', padding: '4px 8px', borderRadius: 6, boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #FECACA' }}>
                     🎯 HIGH VALUE / HIGH RISK (Priority Retention)
                   </span>
                 </div>
-                <div style={{ borderRight: '1px dashed #D4A373', padding: 12 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', background: 'rgba(255,255,255,0.7)', padding: '2px 6px', borderRadius: 4 }}>
+                <div style={{ borderRight: '1px dashed #D8D8D5', padding: 12 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#656565', background: 'rgba(255,255,255,0.85)', padding: '2px 8px', borderRadius: 4 }}>
                     LOW VALUE / LOW RISK (Monitor)
                   </span>
                 </div>
                 <div style={{ padding: 12 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', background: 'rgba(255,255,255,0.7)', padding: '2px 6px', borderRadius: 4 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#656565', background: 'rgba(255,255,255,0.85)', padding: '2px 8px', borderRadius: 4 }}>
                     LOW VALUE / HIGH RISK (Automate / Light Touch)
                   </span>
                 </div>
@@ -250,7 +251,7 @@ export default function RetentionPage() {
                           cx={cx}
                           cy={cy}
                           r={isPriority ? 9 : 6}
-                          fill={isPriority ? '#DC2626' : pt.churn_probability >= 0.4 ? '#D97706' : '#059669'}
+                          fill={isPriority ? '#EF4444' : pt.churn_probability >= 0.4 ? '#F59E0B' : '#5FB57A'}
                           stroke="#FFFFFF"
                           strokeWidth="2"
                           style={{ transition: 'all 0.2s ease' }}
@@ -262,14 +263,14 @@ export default function RetentionPage() {
               ) : (
                 <div style={{
                   position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center', background: 'rgba(248, 250, 252, 0.85)',
+                  alignItems: 'center', justifyContent: 'center', background: 'rgba(243, 243, 241, 0.9)',
                   backdropFilter: 'blur(2px)', zIndex: 10, padding: 24, textAlign: 'center'
                 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB', marginBottom: 12 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(95, 181, 122, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5FB57A', marginBottom: 12 }}>
                     <ShieldCheck style={{ width: 24, height: 24 }} />
                   </div>
-                  <h4 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0F172A' }}>No Accounts Scored in this Matrix Yet</h4>
-                  <p style={{ margin: '4px 0 16px', fontSize: 12.5, color: '#64748B', maxWidth: 420 }}>
+                  <h4 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#111111' }}>No Accounts Scored in this Matrix Yet</h4>
+                  <p style={{ margin: '4px 0 16px', fontSize: 12.5, color: '#656565', maxWidth: 420 }}>
                     Upload your customer dataset or score accounts to dynamically map customers into strategic retention quadrants.
                   </p>
                   <a href="/data-models" className="btn-primary" style={{ textDecoration: 'none', fontSize: 12, padding: '6px 14px' }}>
@@ -281,24 +282,25 @@ export default function RetentionPage() {
           </div>
 
           {/* RETENTION OPPORTUNITY FUNNEL */}
-          <div className="card" style={{ padding: 24, background: '#FFFFFF' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: 18, fontWeight: 900, color: '#1B4332' }}>
+          <div className="saas-card" style={{ padding: 24, background: '#FFFFFF' }}>
+            <h3 className="font-display" style={{ margin: '0 0 16px', fontSize: 18, fontWeight: 900, color: '#111111' }}>
               Retention Opportunity & Operational Conversion Funnel
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: 8 }}>
               {funnelStages.map((stg, idx) => (
                 <div key={idx} style={{
-                  background: '#F7F4EF', padding: 12, borderRadius: 10, textAlign: 'center',
-                  borderTop: `3px solid ${idx < 4 ? '#2D6A4F' : '#D4A373'}`
+                  background: '#F3F3F1', padding: 12, borderRadius: 10, textAlign: 'center',
+                  borderTop: `3px solid ${idx < 4 ? '#5FB57A' : '#111111'}`,
+                  borderLeft: '1px solid #D8D8D5', borderRight: '1px solid #D8D8D5', borderBottom: '1px solid #D8D8D5'
                 }}>
-                  <div style={{ fontSize: 10, color: '#64748B', fontWeight: 800, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ fontSize: 10, color: '#656565', fontWeight: 800, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {stg.stage}
                   </div>
-                  <div style={{ fontSize: 20, fontWeight: 900, color: '#0F172A', marginTop: 4 }}>
+                  <div className="font-display" style={{ fontSize: 20, fontWeight: 900, color: '#111111', marginTop: 4 }}>
                     {stg.count}
                   </div>
-                  <div style={{ fontSize: 11, color: '#2D6A4F', fontWeight: 700, marginTop: 2 }}>
+                  <div style={{ fontSize: 11, color: '#5FB57A', fontWeight: 700, marginTop: 2 }}>
                     {stg.pct}%
                   </div>
                 </div>
@@ -316,12 +318,12 @@ export default function RetentionPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           
           {/* ADVANCED FILTER BAR */}
-          <div className="card" style={{ padding: 18, background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="saas-card" style={{ padding: 18, background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 13, fontWeight: 800, color: '#1B4332' }}>
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#111111' }}>
                 Filter & Rank Retention Decision Candidates
               </span>
-              <button onClick={handleResetFilters} style={{ background: 'none', border: 'none', color: '#2D6A4F', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
+              <button onClick={handleResetFilters} style={{ background: 'none', border: 'none', color: '#5FB57A', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
                 Reset All Filters
               </button>
             </div>
@@ -332,24 +334,24 @@ export default function RetentionPage() {
                 placeholder="Search Customer ID or Contract..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 13 }}
+                className="form-input"
               />
 
-              <select value={riskFilter} onChange={(e) => setRiskFilter(e.target.value)} style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 13 }}>
+              <select value={riskFilter} onChange={(e) => setRiskFilter(e.target.value)} className="form-input">
                 <option value="ALL">Risk: All Levels</option>
                 <option value="CRITICAL">Risk: Critical (&ge;80%)</option>
                 <option value="HIGH">Risk: High (&ge;60%)</option>
                 <option value="MEDIUM">Risk: Medium</option>
               </select>
 
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 13 }}>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="form-input">
                 <option value="expected_net_value">Sort: Expected Net Value (High to Low)</option>
                 <option value="roi">Sort: Expected ROI</option>
                 <option value="customer_value">Sort: Customer CLV</option>
                 <option value="probability">Sort: Churn Probability</option>
               </select>
 
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 13 }}>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="form-input">
                 <option value="ALL">Decision Status: All</option>
                 <option value="REVIEW_REQUIRED">Pending Review</option>
                 <option value="APPROVED">Approved</option>
@@ -360,94 +362,89 @@ export default function RetentionPage() {
           </div>
 
           {/* DECISION QUEUE TABLE */}
-          <div className="card" style={{ padding: 0, background: '#FFFFFF', overflow: 'hidden' }}>
+          <div className="saas-card" style={{ padding: 0, background: '#FFFFFF', overflow: 'hidden' }}>
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
+              <table className="saas-table">
                 <thead>
-                  <tr style={{ background: '#F7F4EF', borderBottom: '1px solid #F0EBDD', color: '#475569' }}>
-                    <th style={{ padding: '12px 16px', fontWeight: 800 }}>Priority</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800 }}>Customer ID</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800 }}>Churn Risk</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800 }}>Customer CLV</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800 }}>Est. Uplift</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800 }}>Recommended Action</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800, textAlign: 'right' }}>Net Value (+EV)</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800, textAlign: 'right' }}>ROI</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800, textAlign: 'center' }}>Workflow</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 800, textAlign: 'right' }}>Action</th>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Customer ID</th>
+                    <th>Churn Risk</th>
+                    <th>Customer CLV</th>
+                    <th>Est. Uplift</th>
+                    <th>Recommended Action</th>
+                    <th style={{ textAlign: 'right' }}>Net Value (+EV)</th>
+                    <th style={{ textAlign: 'right' }}>ROI</th>
+                    <th style={{ textAlign: 'center' }}>Workflow</th>
+                    <th style={{ textAlign: 'right' }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {queueItems.map((item, idx) => (
-                    <tr
-                      key={idx}
-                      style={{ borderBottom: '1px solid #F0EBDD', transition: 'background 0.15s ease' }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#F7F4EF'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#FFFFFF'}
-                    >
-                      <td style={{ padding: '12px 16px' }}>
+                    <tr key={idx}>
+                      <td>
                         <span style={{
                           padding: '3px 8px', borderRadius: 9999, fontSize: 10, fontWeight: 800,
-                          background: item.priority === 'CRITICAL' ? '#E07A5F' : item.priority === 'HIGH' ? '#D4A373' : '#D8F3DC',
-                          color: item.priority === 'CRITICAL' ? '#FFF' : '#1B4332'
+                          background: item.priority === 'CRITICAL' ? 'rgba(239,68,68,0.12)' : item.priority === 'HIGH' ? 'rgba(245,158,11,0.12)' : 'rgba(95,181,122,0.15)',
+                          color: item.priority === 'CRITICAL' ? '#EF4444' : item.priority === 'HIGH' ? '#D97706' : '#111111',
+                          border: `1px solid ${item.priority === 'CRITICAL' ? '#FECACA' : item.priority === 'HIGH' ? '#FDE68A' : 'rgba(95,181,122,0.3)'}`
                         }}>
                           {item.priority}
                         </span>
                       </td>
 
-                      <td style={{ padding: '12px 16px', fontWeight: 800, color: '#1B4332' }}>
+                      <td style={{ fontWeight: 800, color: '#111111' }}>
                         <button
                           onClick={() => setSelectedCustomerId(item.customer_id)}
-                          style={{ background: 'none', border: 'none', color: '#2D6A4F', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}
+                          style={{ background: 'none', border: 'none', color: '#111111', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}
                         >
                           {item.customer_id}
                         </button>
                       </td>
 
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ fontWeight: 800, color: item.probability >= 0.7 ? '#E07A5F' : '#0F172A' }}>
+                      <td>
+                        <div style={{ fontWeight: 800, color: item.probability >= 0.7 ? '#EF4444' : '#111111' }}>
                           {(item.probability * 100).toFixed(1)}%
                         </div>
-                        <div style={{ fontSize: 10, color: '#64748B' }}>Cutoff: 41%</div>
+                        <div style={{ fontSize: 10, color: '#656565' }}>Cutoff: 41%</div>
                       </td>
 
-                      <td style={{ padding: '12px 16px', fontWeight: 700 }}>
+                      <td style={{ fontWeight: 700 }}>
                         ₹{Number(item.customer_value || 0).toLocaleString()}
                       </td>
 
-                      <td style={{ padding: '12px 16px', color: '#2D6A4F', fontWeight: 800 }}>
+                      <td style={{ color: '#5FB57A', fontWeight: 800 }}>
                         +{(Number(item.predicted_uplift || 0.12) * 100).toFixed(0)}%
                       </td>
 
-                      <td style={{ padding: '12px 16px', fontWeight: 800, color: '#0F172A' }}>
+                      <td style={{ fontWeight: 700, color: '#111111' }}>
                         {item.recommended_action}
                       </td>
 
-                      <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 900, color: '#2D6A4F' }}>
+                      <td style={{ textAlign: 'right', fontWeight: 900, color: '#5FB57A' }}>
                         ₹{Number(item.expected_net_value || 0).toLocaleString()}
                       </td>
 
-                      <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 800, color: '#0F172A' }}>
+                      <td style={{ textAlign: 'right', fontWeight: 800, color: '#111111' }}>
                         {(Number(item.roi || 0) * 100).toFixed(0)}%
                       </td>
 
-                      <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      <td style={{ textAlign: 'center' }}>
                         <span style={{
                           padding: '3px 8px', borderRadius: 9999, fontSize: 11, fontWeight: 800,
-                          background: item.workflow_status === 'APPROVED' ? '#D8F3DC' : item.workflow_status === 'REJECTED' ? 'rgba(224,122,95,0.12)' : '#FAEDCD',
-                          color: item.workflow_status === 'APPROVED' ? '#1B4332' : item.workflow_status === 'REJECTED' ? '#991B1B' : '#854D0E'
+                          background: item.workflow_status === 'APPROVED' ? 'rgba(95,181,122,0.15)' : item.workflow_status === 'REJECTED' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
+                          color: item.workflow_status === 'APPROVED' ? '#111111' : item.workflow_status === 'REJECTED' ? '#EF4444' : '#D97706',
+                          border: `1px solid ${item.workflow_status === 'APPROVED' ? 'rgba(95,181,122,0.3)' : item.workflow_status === 'REJECTED' ? '#FECACA' : '#FDE68A'}`
                         }}>
                           {item.workflow_status}
                         </span>
                       </td>
 
-                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                      <td style={{ textAlign: 'right' }}>
                         <button
                           onClick={() => setSelectedDecisionForModal(item)}
-                          style={{
-                            padding: '6px 12px', borderRadius: 6, border: 'none', background: '#1B4332',
-                            color: '#FFFFFF', fontSize: 12, fontWeight: 800, cursor: 'pointer'
-                          }}
+                          className="btn-ink"
+                          style={{ padding: '6px 12px', fontSize: 12 }}
                         >
                           Audit Action
                         </button>
@@ -467,8 +464,8 @@ export default function RetentionPage() {
       {/* ========================================================================= */}
       {activeTab === 'campaigns' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <div style={{ background: '#E07A5F', color: '#FFFFFF', padding: '12px 16px', borderRadius: 10, fontSize: 12, fontWeight: 800 }}>
-            ⚡ LABELED DEMONSTRATION DATA — Simulated Causal Treatment & Control Campaign Testing Studio
+          <div style={{ background: '#F3F3F1', border: '1px solid #D8D8D5', color: '#111111', padding: '12px 16px', borderRadius: 10, fontSize: 12, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: '#5FB57A' }}>⚡</span> SIMULATED EXPERIMENT STUDIO — Causal Treatment & Control Campaign Testing
           </div>
           <CampaignManager />
           <UpliftStudio />
@@ -482,23 +479,23 @@ export default function RetentionPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           
           {/* RETENTION HEALTH SCORECARD */}
-          <div className="card" style={{ padding: 24, background: '#FFFFFF' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: 18, fontWeight: 900, color: '#1B4332' }}>
+          <div className="saas-card" style={{ padding: 24, background: '#FFFFFF' }}>
+            <h3 className="font-display" style={{ margin: '0 0 16px', fontSize: 18, fontWeight: 900, color: '#111111' }}>
               Retention Intelligence Health Scorecard
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
               {[
-                { title: 'Risk Coverage', pct: 84, color: '#2D6A4F' },
-                { title: 'Actionability', pct: 72, color: '#2D6A4F' },
-                { title: 'Positive ROI Coverage', pct: 81, color: '#2D6A4F' },
-                { title: 'Budget Utilization', pct: 61, color: '#D4A373' },
-                { title: 'Campaign Evidence', pct: 70, color: '#2D6A4F' }
+                { title: 'Risk Coverage', pct: 84, color: '#5FB57A' },
+                { title: 'Actionability', pct: 72, color: '#5FB57A' },
+                { title: 'Positive ROI Coverage', pct: 81, color: '#5FB57A' },
+                { title: 'Budget Utilization', pct: 61, color: '#111111' },
+                { title: 'Campaign Evidence', pct: 70, color: '#5FB57A' }
               ].map((sc, i) => (
-                <div key={i} style={{ background: '#F7F4EF', padding: 16, borderRadius: 12, textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B' }}>{sc.title}</div>
-                  <div style={{ fontSize: 24, fontWeight: 900, color: sc.color, marginTop: 4 }}>{sc.pct}%</div>
-                  <div style={{ height: 6, borderRadius: 9999, background: '#E2E8F0', marginTop: 8, overflow: 'hidden' }}>
+                <div key={i} style={{ background: '#F3F3F1', padding: 16, borderRadius: 12, textAlign: 'center', border: '1px solid #D8D8D5' }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: '#656565' }}>{sc.title}</div>
+                  <div className="font-display" style={{ fontSize: 24, fontWeight: 900, color: sc.color, marginTop: 4 }}>{sc.pct}%</div>
+                  <div style={{ height: 6, borderRadius: 9999, background: '#D8D8D5', marginTop: 8, overflow: 'hidden' }}>
                     <div style={{ width: `${sc.pct}%`, height: '100%', background: sc.color }} />
                   </div>
                 </div>
@@ -509,46 +506,46 @@ export default function RetentionPage() {
           {/* EXPECTED VS ACTUAL PERFORMANCE & STRATEGY MATRIX */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             {/* Expected vs Actual */}
-            <div className="card" style={{ padding: 20, background: '#FFFFFF' }}>
-              <h4 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 900, color: '#1B4332' }}>
+            <div className="saas-card" style={{ padding: 20, background: '#FFFFFF' }}>
+              <h4 className="font-display" style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 900, color: '#111111' }}>
                 Expected vs Realized Outcome Comparison
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 10, background: '#F7F4EF', borderRadius: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 10, background: '#F3F3F1', borderRadius: 8, border: '1px solid #D8D8D5' }}>
                   <span>Expected Retention Uplift: <strong>+14.2%</strong></span>
-                  <span>Realized Uplift: <strong style={{ color: '#2D6A4F' }}>+15.8%</strong></span>
+                  <span>Realized Uplift: <strong style={{ color: '#5FB57A' }}>+15.8%</strong></span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 10, background: '#F7F4EF', borderRadius: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 10, background: '#F3F3F1', borderRadius: 8, border: '1px solid #D8D8D5' }}>
                   <span>Expected Net Saved Value: <strong>₹18,450</strong></span>
-                  <span>Realized Value Saved: <strong style={{ color: '#2D6A4F' }}>₹19,200</strong></span>
+                  <span>Realized Value Saved: <strong style={{ color: '#5FB57A' }}>₹19,200</strong></span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 10, background: '#F7F4EF', borderRadius: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 10, background: '#F3F3F1', borderRadius: 8, border: '1px solid #D8D8D5' }}>
                   <span>Projected Campaign ROI: <strong>3.85×</strong></span>
-                  <span>Realized Campaign ROI: <strong style={{ color: '#2D6A4F' }}>4.12×</strong></span>
+                  <span>Realized Campaign ROI: <strong style={{ color: '#5FB57A' }}>4.12×</strong></span>
                 </div>
               </div>
             </div>
 
             {/* Retention Strategy Matrix */}
-            <div className="card" style={{ padding: 20, background: '#FFFFFF' }}>
-              <h4 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 900, color: '#1B4332' }}>
+            <div className="saas-card" style={{ padding: 20, background: '#FFFFFF' }}>
+              <h4 className="font-display" style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 900, color: '#111111' }}>
                 Retention Strategy Matrix (Risk vs. Responsiveness)
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: 8, height: 160, fontSize: 11, textAlign: 'center' }}>
-                <div style={{ background: '#F7F4EF', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <strong style={{ color: '#64748B' }}>LOW RISK / LOW UPLIFT</strong>
+                <div style={{ background: '#F3F3F1', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center', border: '1px solid #D8D8D5' }}>
+                  <strong style={{ color: '#656565' }}>LOW RISK / LOW UPLIFT</strong>
                   <span>MONITOR</span>
                 </div>
-                <div style={{ background: '#D8F3DC', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <strong style={{ color: '#1B4332' }}>LOW RISK / HIGH UPLIFT</strong>
+                <div style={{ background: 'rgba(95, 181, 122, 0.15)', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center', border: '1px solid rgba(95,181,122,0.3)' }}>
+                  <strong style={{ color: '#111111' }}>LOW RISK / HIGH UPLIFT</strong>
                   <span>LIGHT TOUCH OFFER</span>
                 </div>
-                <div style={{ background: '#FAEDCD', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <strong style={{ color: '#854D0E' }}>HIGH RISK / LOW UPLIFT</strong>
+                <div style={{ background: 'rgba(245, 158, 11, 0.12)', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center', border: '1px solid rgba(245,158,11,0.3)' }}>
+                  <strong style={{ color: '#D97706' }}>HIGH RISK / LOW UPLIFT</strong>
                   <span>NO ACTION (Negative EV)</span>
                 </div>
-                <div style={{ background: '#1B4332', color: '#FFF', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <strong style={{ color: '#D8F3DC' }}>HIGH RISK / HIGH UPLIFT</strong>
+                <div style={{ background: '#111111', color: '#FFF', padding: 12, borderRadius: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <strong style={{ color: '#5FB57A' }}>HIGH RISK / HIGH UPLIFT</strong>
                   <span>🎯 PRIORITY RETENTION</span>
                 </div>
               </div>

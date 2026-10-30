@@ -41,9 +41,9 @@ export default function Navbar() {
   }, []);
 
   const statusConfig = {
-    online:   { dot: '#2D6A4F', text: 'Live',     bg: '#D8F3DC', border: 'rgba(45,106,79,0.3)', color: '#1B4332' },
-    offline:  { dot: '#E07A5F', text: 'Offline',  bg: 'rgba(224,122,95,0.12)', border: 'rgba(224,122,95,0.3)', color: '#991B1B' },
-    checking: { dot: '#D4A373', text: 'Checking', bg: 'rgba(212,163,115,0.15)', border: 'rgba(212,163,115,0.3)', color: '#78350F' },
+    online:   { dot: '#5FB57A', text: 'Live',     bg: 'rgba(95,181,122,0.15)', border: 'rgba(95,181,122,0.3)', color: '#111111' },
+    offline:  { dot: '#EF4444', text: 'Offline',  bg: 'rgba(239,68,68,0.12)', border: '#FECACA', color: '#EF4444' },
+    checking: { dot: '#F59E0B', text: 'Checking', bg: 'rgba(245,158,11,0.15)', border: '#FDE68A', color: '#D97706' },
   };
   const status = statusConfig[apiStatus];
 
@@ -55,11 +55,11 @@ export default function Navbar() {
           top: 0, left: 0, right: 0,
           zIndex: 50,
           transition: 'all 0.25s ease',
-          background: scrolled ? 'rgba(247, 244, 239, 0.95)' : 'rgba(247, 244, 239, 0.88)',
+          background: scrolled ? 'rgba(235, 235, 234, 0.95)' : 'rgba(235, 235, 234, 0.88)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(27, 67, 50, 0.10)',
-          boxShadow: scrolled ? '0 4px 20px rgba(15, 23, 42, 0.04)' : 'none',
+          borderBottom: '1px solid #D8D8D5',
+          boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.04)' : 'none',
         }}
       >
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
@@ -71,16 +71,15 @@ export default function Navbar() {
                 style={{
                   width: 36, height: 36,
                   borderRadius: 10,
-                  background: 'linear-gradient(135deg, #1B4332, #2D6A4F)',
+                  background: '#111111',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(27,67,50,0.25)',
                 }}
               >
-                <ShieldAlert style={{ width: 18, height: 18, color: 'white' }} />
+                <ShieldAlert style={{ width: 18, height: 18, color: '#5FB57A' }} />
               </div>
-              <span style={{ fontSize: 18, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em' }}>
-                RetainX
-                <span style={{ color: '#2D6A4F', marginLeft: 4, fontWeight: 900 }}>AI</span>
+              <span className="font-display" style={{ fontSize: 18, fontWeight: 900, color: '#111111', letterSpacing: '-0.02em' }}>
+                Retain
+                <span style={{ color: '#5FB57A', marginLeft: 4, fontWeight: 900 }}>X</span>
               </span>
             </Link>
 
@@ -102,12 +101,12 @@ export default function Navbar() {
                       fontWeight: 700,
                       textDecoration: 'none',
                       transition: 'all 0.2s ease',
-                      background: isActive ? '#D8F3DC' : 'transparent',
-                      color: isActive ? '#1B4332' : '#334155',
-                      border: isActive ? '1px solid rgba(45,106,79,0.3)' : '1px solid transparent',
+                      background: isActive ? '#111111' : 'transparent',
+                      color: isActive ? '#FFFFFF' : '#656565',
+                      border: isActive ? '1px solid #111111' : '1px solid transparent',
                     })}
                   >
-                    <Icon style={{ width: 15, height: 15, color: '#2D6A4F' }} />
+                    <Icon style={{ width: 15, height: 15, color: '#5FB57A' }} />
                     {label}
                   </NavLink>
                 ))}
@@ -154,11 +153,11 @@ export default function Navbar() {
                       padding: '5px 12px',
                       borderRadius: 10,
                       background: '#FFFFFF',
-                      border: '1px solid rgba(45, 106, 79, 0.2)',
-                      color: '#1B4332',
+                      border: '1px solid #D8D8D5',
+                      color: '#111111',
                     }}
                   >
-                    <Building2 style={{ width: 14, height: 14, color: '#2D6A4F' }} />
+                    <Building2 style={{ width: 14, height: 14, color: '#5FB57A' }} />
                     {user.company?.name || 'Workspace'}
                   </div>
 
@@ -174,11 +173,11 @@ export default function Navbar() {
                       padding: '5px 10px',
                       borderRadius: 10,
                       background: '#FFFFFF',
-                      border: '1px solid rgba(0,0,0,0.08)',
-                      color: '#334155',
+                      border: '1px solid #D8D8D5',
+                      color: '#111111',
                     }}
                   >
-                    <User style={{ width: 14, height: 14, color: '#64748B' }} />
+                    <User style={{ width: 14, height: 14, color: '#656565' }} />
                     <span style={{ maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {user.full_name || user.email.split('@')[0]}
                     </span>
@@ -195,9 +194,9 @@ export default function Navbar() {
                       gap: 5,
                       padding: '6px 12px',
                       borderRadius: 10,
-                      background: 'rgba(224,122,95,0.1)',
-                      border: '1px solid rgba(224,122,95,0.25)',
-                      color: '#991B1B',
+                      background: 'rgba(239,68,68,0.1)',
+                      border: '1px solid #FECACA',
+                      color: '#EF4444',
                       fontSize: 12,
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -218,8 +217,8 @@ export default function Navbar() {
                     padding: 8,
                     borderRadius: 10,
                     background: '#FFFFFF',
-                    border: '1px solid rgba(27,67,50,0.15)',
-                    color: '#334155',
+                    border: '1px solid #D8D8D5',
+                    color: '#111111',
                     cursor: 'pointer',
                     alignItems: 'center',
                   }}
@@ -236,17 +235,17 @@ export default function Navbar() {
         {/* Mobile Menu Drawer */}
         {open && isAuthenticated && (
           <div style={{
-            background: '#F7F4EF',
-            borderTop: '1px solid rgba(27,67,50,0.10)',
+            background: '#F3F3F1',
+            borderTop: '1px solid #D8D8D5',
             padding: '12px 16px 16px',
-            boxShadow: '0 8px 24px rgba(15,23,42,0.06)'
+            boxShadow: '0 8px 24px rgba(0,0,0,0.06)'
           }}
           className="md:hidden animate-fade-in"
           >
             {user && (
-              <div style={{ padding: '8px 12px', marginBottom: 8, background: '#FFFFFF', borderRadius: 8, border: '1px solid rgba(45,106,79,0.15)' }}>
-                <div style={{ fontSize: 13, fontWeight: 800, color: '#1B4332' }}>🏢 {user.company?.name}</div>
-                <div style={{ fontSize: 12, color: '#64748B' }}>👤 {user.full_name || user.email}</div>
+              <div style={{ padding: '8px 12px', marginBottom: 8, background: '#FFFFFF', borderRadius: 8, border: '1px solid #D8D8D5' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#111111' }}>🏢 {user.company?.name}</div>
+                <div style={{ fontSize: 12, color: '#656565' }}>👤 {user.full_name || user.email}</div>
               </div>
             )}
             {navItems.map(({ to, label, icon: Icon, exact }) => (
@@ -264,12 +263,12 @@ export default function Navbar() {
                   fontWeight: 700,
                   textDecoration: 'none',
                   marginBottom: 6,
-                  background: isActive ? '#D8F3DC' : '#FFFFFF',
-                  color: isActive ? '#1B4332' : '#334155',
-                  border: isActive ? '1px solid rgba(45,106,79,0.3)' : '1px solid rgba(27,67,50,0.08)',
+                  background: isActive ? '#111111' : '#FFFFFF',
+                  color: isActive ? '#FFFFFF' : '#656565',
+                  border: isActive ? '1px solid #111111' : '1px solid #D8D8D5',
                 })}
               >
-                <Icon style={{ width: 16, height: 16, color: '#2D6A4F' }} />
+                <Icon style={{ width: 16, height: 16, color: '#5FB57A' }} />
                 {label}
               </NavLink>
             ))}

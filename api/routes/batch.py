@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from api.dependencies import predictor, get_db
 from churnguard.config import ARTIFACTS_DIR
 from churnguard.database.models import User, Customer, Prediction, RetentionDecision
-from churnguard.auth.dependencies import get_current_active_user
+from churnguard.auth.dependencies import get_current_active_user, require_manager
 from churnguard.services.training_service import get_active_company_predictor
 
 router = APIRouter()
@@ -32,7 +32,7 @@ BATCH_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 @router.post("/customers/upload")
 async def batch_upload_customers(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """

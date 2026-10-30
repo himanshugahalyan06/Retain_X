@@ -13,7 +13,12 @@ from sqlalchemy.orm import Session
 
 from api.dependencies import get_db
 from churnguard.database.models import User, CompanyTrainingJob, CompanyModel
-from churnguard.auth.dependencies import get_current_active_user
+from churnguard.auth.dependencies import (
+    get_current_active_user,
+    require_manager,
+    require_admin,
+    log_audit_event
+)
 from churnguard.services.training_service import (
     start_company_training_job,
     activate_company_model
@@ -33,7 +38,7 @@ class StartTrainingRequest(BaseModel):
 @router.post("/training-jobs")
 def create_training_job(
     request: StartTrainingRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
@@ -245,11 +250,12 @@ def get_model_details(
 @router.post("/models/{model_id}/activate")
 def activate_model_endpoint(
     model_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
     Safely activate a validated model for company-specific scoring and inference.
+    ADMIN only.
     """
     try:
         model = activate_company_model(
@@ -257,6 +263,18 @@ def activate_model_endpoint(
             model_id=model_id,
             db=db
         )
+
+        log_audit_event(
+            db=db,
+            company_id=current_user.company_id,
+            user_id=current_user.id,
+            user_email=current_user.email,
+            action="MODEL_ACTIVATED",
+            resource_type="MODEL",
+            resource_id=str(model.id),
+            details={"version": model.version, "algorithm": model.algorithm}
+        )
+
         return {
             "success": True,
             "message": f"Model {model.version} ({model.algorithm}) is now active for predictions.",

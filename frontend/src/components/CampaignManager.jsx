@@ -59,22 +59,18 @@ export default function CampaignManager() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* Header bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#1B4332' }}>Retention Campaigns & Experiments</h2>
-          <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748B' }}>
+          <h2 className="font-display" style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: '#111111' }}>Retention Campaigns & Experiments</h2>
+          <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#656565' }}>
             Manage treatment vs control retention campaigns and measure true causal incremental uplift.
           </p>
         </div>
 
         <button
           onClick={() => setShowModal(true)}
-          style={{
-            padding: '10px 18px', borderRadius: '10px', border: 'none',
-            background: 'linear-gradient(135deg, #1B4332, #2D6A4F)', color: '#FFF',
-            fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
-          }}
+          className="btn-primary"
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
         >
           <Plus style={{ width: 16, height: 16 }} />
           Create New Campaign
@@ -141,9 +137,10 @@ export default function CampaignManager() {
               {c.status === 'DRAFT' && (
                 <button
                   onClick={() => handleLaunch(c.campaign_id || c.id)}
+                  className="btn-ink"
                   style={{
                     width: '100%', marginTop: '16px', padding: '10px', borderRadius: '8px',
-                    border: 'none', background: '#1B4332', color: '#FFF', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+                    fontSize: '13px', fontWeight: 700, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                   }}
                 >
@@ -195,8 +192,8 @@ export default function CampaignManager() {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFF' }}>Cancel</button>
-                <button type="submit" style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#1B4332', color: '#FFF', fontWeight: 700 }}>Save Campaign</button>
+                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Save Campaign</button>
               </div>
             </form>
           </div>

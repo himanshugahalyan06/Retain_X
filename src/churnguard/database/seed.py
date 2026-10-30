@@ -116,19 +116,29 @@ def seed_db():
             db.refresh(company)
             print(f"Default tenant company '{company.name}' seeded.")
 
-        admin_user = db.query(User).filter_by(email="admin@churnguard.ai").first()
-        if not admin_user:
-            admin_user = User(
-                email="admin@churnguard.ai",
-                hashed_password=hash_password("password123"),
-                full_name="System Admin",
-                role="ADMIN",
-                company_id=company.id,
-                is_active=True
-            )
-            db.add(admin_user)
-            db.commit()
-            print("Default admin user 'admin@churnguard.ai' seeded.")
+        demo_users = [
+            ("admin@retainx.ai", "System Admin", "ADMIN"),
+            ("manager@retainx.ai", "Retention Manager", "MANAGER"),
+            ("analyst@retainx.ai", "Risk Analyst", "MEMBER"),
+            ("admin@churnguard.ai", "System Admin", "ADMIN"),
+            ("manager@churnguard.ai", "Retention Manager", "MANAGER"),
+            ("analyst@churnguard.ai", "Risk Analyst", "MEMBER"),
+        ]
+        for demo_email, demo_name, demo_role in demo_users:
+            u = db.query(User).filter_by(email=demo_email).first()
+            if not u:
+                u = User(
+                    email=demo_email,
+                    hashed_password=hash_password("password123"),
+                    full_name=demo_name,
+                    role=demo_role,
+                    company_id=company.id,
+                    is_active=True,
+                    is_verified=True
+                )
+                db.add(u)
+        db.commit()
+        print("Demo users seeded for RetainX and legacy ChurnGuard domains.")
 
         # Check settings
         settings = db.query(BusinessSettings).first()

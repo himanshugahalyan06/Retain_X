@@ -78,10 +78,7 @@ def predict_customer_endpoint(
         company_id = current_user.company_id
 
         # 1. Upsert Customer Record
-        db_cust = db.query(Customer).filter(
-            Customer.customer_id == customer_id,
-            Customer.company_id == company_id
-        ).first()
+        db_cust = db.query(Customer).filter(Customer.customer_id == customer_id).first()
         if not db_cust:
             db_cust = Customer(customer_id=customer_id, company_id=company_id)
             db.add(db_cust)
@@ -108,10 +105,12 @@ def predict_customer_endpoint(
         days_since_login = raw_customer_data.get("days_since_last_login") or beh_dict.get("days_since_last_login")
 
         if any(x is not None for x in [login_freq, feat_usage, session_dur, last_active, days_since_login]):
-            b_row = db.query(CustomerBehavioralData).filter_by(customer_id=customer_id).first()
+            b_row = db.query(CustomerBehavioralData).filter(CustomerBehavioralData.customer_id == customer_id).first()
             if not b_row:
-                b_row = CustomerBehavioralData(customer_id=customer_id)
+                b_row = CustomerBehavioralData(customer_id=customer_id, company_id=company_id)
                 db.add(b_row)
+            else:
+                b_row.company_id = company_id
             if login_freq is not None: b_row.login_frequency = float(login_freq)
             if feat_usage is not None: b_row.feature_usage_count = int(feat_usage)
             if session_dur is not None: b_row.avg_session_duration_minutes = float(session_dur)
@@ -128,10 +127,12 @@ def predict_customer_endpoint(
         last_contact = raw_customer_data.get("last_contact_date") or crm_dict.get("last_contact_date")
 
         if any(x is not None for x in [lifecycle, owner, d_val, last_contact]):
-            c_row = db.query(CustomerCRMData).filter_by(customer_id=customer_id).first()
+            c_row = db.query(CustomerCRMData).filter(CustomerCRMData.customer_id == customer_id).first()
             if not c_row:
-                c_row = CustomerCRMData(customer_id=customer_id)
+                c_row = CustomerCRMData(customer_id=customer_id, company_id=company_id)
                 db.add(c_row)
+            else:
+                c_row.company_id = company_id
             if lifecycle is not None: c_row.lifecycle_stage = str(lifecycle)
             if owner is not None: c_row.account_owner = str(owner)
             if d_val is not None: c_row.deal_value = float(d_val)
@@ -146,10 +147,12 @@ def predict_customer_endpoint(
         csat = raw_customer_data.get("last_csat_score") or sup_dict.get("last_csat_score")
 
         if any(x is not None for x in [tickets, res_time, csat]):
-            s_row = db.query(CustomerSupportData).filter_by(customer_id=customer_id).first()
+            s_row = db.query(CustomerSupportData).filter(CustomerSupportData.customer_id == customer_id).first()
             if not s_row:
-                s_row = CustomerSupportData(customer_id=customer_id)
+                s_row = CustomerSupportData(customer_id=customer_id, company_id=company_id)
                 db.add(s_row)
+            else:
+                s_row.company_id = company_id
             if tickets is not None: s_row.total_tickets = int(tickets)
             if res_time is not None: s_row.avg_resolution_time_hours = float(res_time)
             if csat is not None: s_row.last_csat_score = int(csat)
@@ -163,10 +166,12 @@ def predict_customer_endpoint(
         delay_days = raw_customer_data.get("days_since_last_payment_delay") or pay_dict.get("days_since_last_payment_delay")
 
         if any(x is not None for x in [failed_pays, downgrades, delay_days]):
-            p_row = db.query(CustomerPaymentData).filter_by(customer_id=customer_id).first()
+            p_row = db.query(CustomerPaymentData).filter(CustomerPaymentData.customer_id == customer_id).first()
             if not p_row:
-                p_row = CustomerPaymentData(customer_id=customer_id)
+                p_row = CustomerPaymentData(customer_id=customer_id, company_id=company_id)
                 db.add(p_row)
+            else:
+                p_row.company_id = company_id
             if failed_pays is not None: p_row.failed_payments_count = int(failed_pays)
             if downgrades is not None: p_row.plan_downgrades_count = int(downgrades)
             if delay_days is not None: p_row.days_since_last_payment_delay = int(delay_days)

@@ -53,7 +53,24 @@ export const clearApiCache = (urlPrefix = null) => {
 // Authentication Endpoints
 export const loginApi = (credentials) => API.post('/api/auth/login', credentials);
 export const signupApi = (data) => API.post('/api/auth/signup', data);
-export const getMe = () => cachedGet('/api/auth/me', null, 30000);
+export const refreshTokenApi = (data) => API.post('/api/auth/refresh', data);
+export const logoutApi = () => API.post('/api/auth/logout');
+export const getMe = () => cachedGet('/api/auth/me', null, 10000);
+
+// Password Management & Email Verification
+export const forgotPasswordApi = (data) => API.post('/api/auth/forgot-password', data);
+export const resetPasswordApi = (data) => API.post('/api/auth/reset-password', data);
+export const verifyEmailRequestApi = (data) => API.post('/api/auth/verify-email/request', data);
+export const verifyEmailConfirmApi = (data) => API.post('/api/auth/verify-email/confirm', data);
+
+// Team & Invitation Management
+export const getInvitationsApi = () => API.get('/api/auth/invitations');
+export const inviteUserApi = (data) => API.post('/api/auth/invitations', data);
+export const verifyInvitationApi = (token) => API.get(`/api/auth/invitations/${token}/verify`);
+export const acceptInvitationApi = (data) => API.post('/api/auth/invitations/accept', data);
+export const getTeamMembersApi = () => API.get('/api/auth/team/members');
+export const updateMemberRoleApi = (memberId, data) => API.put(`/api/auth/team/members/${memberId}`, data);
+export const getAuditLogsApi = (params) => API.get('/api/auth/audit-logs', { params });
 
 // Core Prediction & Explain Endpoints
 export const predict = (formData) => API.post('/api/predict', formData);

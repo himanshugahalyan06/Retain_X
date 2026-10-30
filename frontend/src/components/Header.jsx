@@ -37,7 +37,7 @@ export default function Header({ onOpenMobile }) {
       case '/settings':
         return 'Workspace Settings';
       default:
-        return 'ChurnGuard Workstation';
+        return 'Retain X Workstation';
     }
   };
 

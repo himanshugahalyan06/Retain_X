@@ -5,7 +5,7 @@ from api.dependencies import get_db
 from api.schemas import CampaignCreateRequest
 from churnguard.services.campaign_service import CampaignService
 from churnguard.database.models import Campaign, User
-from churnguard.auth.dependencies import get_current_active_user
+from churnguard.auth.dependencies import get_current_active_user, require_manager
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ def list_campaigns(
 @router.post("/campaigns")
 def create_campaign(
     req: CampaignCreateRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ):
     service = CampaignService(db_session=db)
@@ -48,7 +48,7 @@ def create_campaign(
 @router.post("/campaigns/{id}/launch")
 def launch_campaign(
     id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_manager),
     db: Session = Depends(get_db)
 ):
     service = CampaignService(db_session=db)

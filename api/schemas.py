@@ -241,9 +241,37 @@ class UserOut(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: Optional[str] = None
     token_type: str = "bearer"
     user: UserOut
     company: CompanyOut
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: Optional[str] = None
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+class VerifyEmailRequest(BaseModel):
+    token: str
+
+class InviteUserRequest(BaseModel):
+    email: str
+    role: str = "MEMBER" # ADMIN, MANAGER, MEMBER
+
+class AcceptInviteRequest(BaseModel):
+    token: str
+    password: str
+    full_name: Optional[str] = None
+
+class UpdateUserRoleRequest(BaseModel):
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
 
 # ----------------------------------------------------
 # What-If Simulation Schemas

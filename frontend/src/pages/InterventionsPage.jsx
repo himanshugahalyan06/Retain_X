@@ -93,15 +93,17 @@ export default function InterventionsPage() {
           <span>{toast.message}</span>
           <button onClick={() => setToast(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: 800, marginLeft: 12 }}>✕</button>
         </div>
-      )}
-
-      {/* Header */}
+      )}      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 9999, background: 'rgba(95, 181, 122, 0.15)', color: '#111111', fontSize: 11, fontWeight: 800, border: '1px solid rgba(95, 181, 122, 0.3)', marginBottom: 6, letterSpacing: '0.06em' }}>
+            <Zap style={{ width: 13, height: 13, color: '#5FB57A' }} />
+            DECISION AUDIT LOG
+          </div>
+          <h1 className="font-display" style={{ fontSize: 28, fontWeight: 900, color: '#111111', margin: 0, letterSpacing: '-0.02em' }}>
             Intervention Recommendation Log & Decisions
           </h1>
-          <p style={{ fontSize: 13, color: '#64748B', marginTop: 3, marginBottom: 0 }}>
+          <p style={{ fontSize: 13, color: '#656565', marginTop: 3, marginBottom: 0 }}>
             Manage Next-Best-Action retention workflows, review ROI savings, and audit manager decisions.
           </p>
         </div>
@@ -112,7 +114,6 @@ export default function InterventionsPage() {
         </button>
       </div>
 
-
       {/* Filter Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {['ALL', 'PENDING_REVIEW', 'APPROVED', 'REJECTED'].map((status) => (
@@ -121,14 +122,14 @@ export default function InterventionsPage() {
             type="button"
             onClick={() => setStatusFilter(status)}
             style={{
-              padding: '6px 14px',
-              borderRadius: 6,
+              padding: '8px 16px',
+              borderRadius: 8,
               fontSize: 12.5,
               fontWeight: 700,
               cursor: 'pointer',
-              border: statusFilter === status ? '1px solid #2563EB' : '1px solid #E2E8F0',
-              background: statusFilter === status ? '#EFF6FF' : '#FFFFFF',
-              color: statusFilter === status ? '#1D4ED8' : '#64748B',
+              border: statusFilter === status ? '1px solid #111111' : '1px solid #D8D8D5',
+              background: statusFilter === status ? '#111111' : '#F3F3F1',
+              color: statusFilter === status ? '#FFFFFF' : '#656565',
               transition: 'all 0.15s',
             }}
           >
@@ -138,7 +139,7 @@ export default function InterventionsPage() {
       </div>
 
       {/* Decision Table */}
-      <div className="saas-card" style={{ overflow: 'hidden' }}>
+      <div className="saas-card" style={{ overflow: 'hidden', padding: 0 }}>
         <table className="saas-table">
           <thead>
             <tr>
@@ -155,13 +156,13 @@ export default function InterventionsPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#656565' }}>
                   Loading intervention records...
                 </td>
               </tr>
             ) : filteredDecisions.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#656565' }}>
                   No interventions found in this status category.
                 </td>
               </tr>
@@ -175,28 +176,28 @@ export default function InterventionsPage() {
 
                 return (
                   <tr key={item.id || item.customer_id}>
-                    <td style={{ fontWeight: 700, color: '#0F172A' }}>
+                    <td style={{ fontWeight: 700, color: '#111111' }}>
                       {item.customer_id || `CG-${item.id}`}
                     </td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, color: '#2563EB' }}>
-                        <Zap style={{ width: 14, height: 14, color: '#2563EB' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, color: '#111111' }}>
+                        <Zap style={{ width: 14, height: 14, color: '#5FB57A' }} />
                         {item.recommended_action || 'Offer Loyalty Discount'}
                       </div>
                     </td>
                     <td>${Number(cost).toFixed(2)}</td>
-                    <td style={{ color: '#059669', fontWeight: 700 }}>+{uplift.toFixed(1)}%</td>
-                    <td style={{ fontWeight: 700, color: '#0F172A' }}>${Number(netSavings).toFixed(2)}</td>
+                    <td style={{ color: '#5FB57A', fontWeight: 700 }}>+{uplift.toFixed(1)}%</td>
+                    <td style={{ fontWeight: 700, color: '#111111' }}>${Number(netSavings).toFixed(2)}</td>
                     <td>
                       <span
                         style={{
-                          padding: '2px 8px',
-                          borderRadius: 4,
-                          fontSize: 11.5,
+                          padding: '3px 8px',
+                          borderRadius: 9999,
+                          fontSize: 11,
                           fontWeight: 800,
-                          background: '#ECFDF5',
-                          color: '#065F46',
-                          border: '1px solid #A7F3D0',
+                          background: 'rgba(95,181,122,0.15)',
+                          color: '#111111',
+                          border: '1px solid rgba(95,181,122,0.3)',
                         }}
                       >
                         {Number(roi).toFixed(1)}x ROI
@@ -210,11 +211,11 @@ export default function InterventionsPage() {
                           fontSize: 11,
                           fontWeight: 700,
                           background:
-                            status === 'APPROVED' ? '#ECFDF5' : status === 'REJECTED' ? '#FEF2F2' : '#FFFBEB',
+                            status === 'APPROVED' ? 'rgba(95,181,122,0.15)' : status === 'REJECTED' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
                           color:
-                            status === 'APPROVED' ? '#065F46' : status === 'REJECTED' ? '#991B1B' : '#92400E',
+                            status === 'APPROVED' ? '#111111' : status === 'REJECTED' ? '#EF4444' : '#D97706',
                           border: `1px solid ${
-                            status === 'APPROVED' ? '#A7F3D0' : status === 'REJECTED' ? '#FECACA' : '#FDE68A'
+                            status === 'APPROVED' ? 'rgba(95,181,122,0.3)' : status === 'REJECTED' ? '#FECACA' : '#FDE68A'
                           }`,
                         }}
                       >
@@ -226,37 +227,21 @@ export default function InterventionsPage() {
                         <div style={{ display: 'inline-flex', gap: 6 }}>
                           <button
                             onClick={() => handleApprove(item.id)}
-                            style={{
-                              background: '#ECFDF5',
-                              border: '1px solid #A7F3D0',
-                              color: '#065F46',
-                              padding: '4px 8px',
-                              borderRadius: 4,
-                              fontSize: 12,
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                            }}
+                            className="btn-primary"
+                            style={{ padding: '4px 10px', fontSize: 12 }}
                           >
                             Approve
                           </button>
                           <button
                             onClick={() => handleReject(item.id)}
-                            style={{
-                              background: '#FEF2F2',
-                              border: '1px solid #FECACA',
-                              color: '#991B1B',
-                              padding: '4px 8px',
-                              borderRadius: 4,
-                              fontSize: 12,
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                            }}
+                            className="btn-secondary"
+                            style={{ padding: '4px 10px', fontSize: 12, color: '#EF4444', borderColor: '#FECACA' }}
                           >
                             Reject
                           </button>
                         </div>
                       ) : (
-                        <span style={{ fontSize: 12, color: '#94A3B8' }}>Logged</span>
+                        <span style={{ fontSize: 12, color: '#656565' }}>Logged</span>
                       )}
                     </td>
                   </tr>

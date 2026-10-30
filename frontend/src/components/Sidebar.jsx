@@ -100,7 +100,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               </div>
               <div>
                 <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-                  ChurnGuard
+                  Retain X
                 </div>
                 <div style={{ fontSize: 10.5, fontWeight: 600, color: '#94A3B8', letterSpacing: '0.04em' }}>
                   ENTERPRISE RETENTION
@@ -204,7 +204,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 {user?.full_name || 'Admin User'}
               </div>
               <div style={{ fontSize: 11, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user?.email || 'admin@churnguard.ai'}
+                {user?.email || 'admin@retainx.ai'}
               </div>
             </div>
 
