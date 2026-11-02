@@ -34,7 +34,7 @@ import {
 import { Link } from 'react-router-dom';
 import { getMetrics, getRetentionDashboard, getRetentionQueue, getDashboardAnalytics } from '../lib/api';
 
-const CHURN_DONUT_COLORS = ['#5FB57A', '#EF4444'];
+const CHURN_DONUT_COLORS = ['#14B8A6', '#DC2626'];
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState(null);
@@ -122,14 +122,14 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-[#111111] font-display tracking-tight">
+            <h1 className="text-2xl font-black text-[#0B1F3A] font-heading tracking-tight">
               Executive Retention Overview
             </h1>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#EBF7EF] text-[#1B5E34] border border-[#A6DCB8] uppercase">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#F0FDFA] text-[#0F766E] border border-[#99F6E4] uppercase">
               Production Calibrated
             </span>
           </div>
-          <p className="text-xs text-[#656565] mt-1">
+          <p className="text-xs text-[#64748B] mt-1">
             Real-time portfolio churn dynamics, risk migration, calibrated decision thresholds, and urgent intervention queues.
           </p>
         </div>
@@ -147,14 +147,14 @@ export default function DashboardPage() {
             to="/data-models"
             className="btn-secondary py-2 px-3 text-xs font-bold flex items-center gap-1.5"
           >
-            <Database className="w-3.5 h-3.5 text-[#5FB57A]" />
+            <Database className="w-3.5 h-3.5 text-[#14B8A6]" />
             <span>Model Studio</span>
           </Link>
           <Link
             to="/predict"
-            className="btn-ink py-2 px-4 text-xs font-bold flex items-center gap-1.5"
+            className="btn-primary py-2 px-4 text-xs font-bold flex items-center gap-1.5"
           >
-            <Zap className="w-3.5 h-3.5 text-[#5FB57A]" />
+            <Zap className="w-3.5 h-3.5" />
             <span>Score Customer</span>
           </Link>
         </div>
@@ -165,15 +165,15 @@ export default function DashboardPage() {
         {/* Total Accounts */}
         <div className="saas-card p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
               Monitored Base
             </span>
-            <Users className="w-4 h-4 text-[#111111]" />
+            <Users className="w-4 h-4 text-[#0B1F3A]" />
           </div>
-          <div className="text-3xl font-black text-[#111111] font-display">
+          <div className="text-3xl font-black text-[#0B1F3A] font-heading font-mono">
             {Number(totalAccounts).toLocaleString()}
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-[#5FB57A] font-bold mt-2">
+          <div className="flex items-center gap-1.5 text-xs text-[#14B8A6] font-bold mt-2">
             <TrendingUp className="w-3.5 h-3.5" />
             <span>Tenant-Isolated Database</span>
           </div>
@@ -182,15 +182,15 @@ export default function DashboardPage() {
         {/* At-Risk Accounts */}
         <div className="saas-card p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
               At-Risk Accounts
             </span>
-            <AlertTriangle className="w-4 h-4 text-red-600" />
+            <AlertTriangle className="w-4 h-4 text-[#DC2626]" />
           </div>
-          <div className="text-3xl font-black text-red-600 font-display">
+          <div className="text-3xl font-black text-[#DC2626] font-heading font-mono">
             {Number(atRiskCount).toLocaleString()}
           </div>
-          <div className="text-xs text-red-700 font-semibold mt-2">
+          <div className="text-xs text-[#991B1B] font-semibold mt-2">
             {atRiskPct}% above optimal cutoff
           </div>
         </div>
@@ -198,16 +198,16 @@ export default function DashboardPage() {
         {/* Protected Revenue */}
         <div className="saas-card p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
               Protected Revenue
             </span>
-            <DollarSign className="w-4 h-4 text-[#5FB57A]" />
+            <DollarSign className="w-4 h-4 text-[#14B8A6]" />
           </div>
-          <div className="text-3xl font-black text-[#5FB57A] font-display">
+          <div className="text-3xl font-black text-[#14B8A6] font-heading font-mono">
             ${Number(revenueSaved).toLocaleString()}
           </div>
-          <div className="flex items-center gap-1 text-xs text-[#656565] font-semibold mt-2">
-            <TrendingDown className="w-3.5 h-3.5 text-[#5FB57A]" />
+          <div className="flex items-center gap-1 text-xs text-[#64748B] font-semibold mt-2">
+            <TrendingDown className="w-3.5 h-3.5 text-[#14B8A6]" />
             <span>3.4× ROI vs flat interventions</span>
           </div>
         </div>
@@ -215,12 +215,12 @@ export default function DashboardPage() {
         {/* Optimal Cutoff & Model */}
         <div className="saas-card p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#656565]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
               Optimal Cutoff (p*)
             </span>
-            <Scale className="w-4 h-4 text-[#111111]" />
+            <Scale className="w-4 h-4 text-[#0B1F3A]" />
           </div>
-          <div className="text-3xl font-black text-[#111111] font-display">
+          <div className="text-3xl font-black text-[#0B1F3A] font-heading font-mono">
             {Number(optimalThreshold).toFixed(2)}
           </div>
           <div className="text-xs text-[#656565] font-medium mt-2 truncate">
@@ -285,23 +285,23 @@ export default function DashboardPage() {
         <div className="lg:col-span-7 saas-card">
           <div className="saas-card-header">
             <div>
-              <h3 className="text-sm font-bold text-[#111111]">Churn Probability Distribution</h3>
-              <p className="text-[11.5px] text-[#656565]">Portfolio density across 10-point probability deciles</p>
+              <h3 className="text-sm font-bold text-[#0B1F3A] font-heading">Churn Probability Distribution</h3>
+              <p className="text-[11.5px] text-[#64748B]">Portfolio density across 10-point probability deciles</p>
             </div>
           </div>
           <div className="saas-card-body h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={probHistogram} margin={{ top: 10, right: 15, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#EBEBEA" />
-                <XAxis dataKey="bucket" tick={{ fontSize: 11, fill: '#656565' }} axisLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#656565' }} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <XAxis dataKey="bucket" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} />
                 <Tooltip
                   formatter={(val) => [`${Number(val).toLocaleString()} accounts`, 'Density']}
-                  contentStyle={{ background: '#111111', border: '1px solid #333333', borderRadius: 8, color: '#FFF', fontSize: 12 }}
+                  contentStyle={{ background: '#0B1F3A', border: '1px solid #132F54', borderRadius: 8, color: '#FFF', fontSize: 12 }}
                 />
                 <Bar dataKey="count" name="Accounts" radius={[4, 4, 0, 0]}>
                   {probHistogram.map((entry, index) => {
-                    const color = index < 4 ? '#5FB57A' : index < 7 ? '#F59E0B' : '#EF4444';
+                    const color = index < 4 ? '#14B8A6' : index < 7 ? '#F59E0B' : '#DC2626';
                     return <Cell key={`bar-${index}`} fill={color} />;
                   })}
                 </Bar>

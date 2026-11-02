@@ -56,7 +56,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         style={{
           width: 250,
           height: '100vh',
-          backgroundColor: '#0F172A',
+          backgroundColor: '#0B1F3A',
           color: '#F8FAFC',
           position: 'fixed',
           top: 0,
@@ -66,44 +66,44 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          borderRight: '1px solid #1E293B',
+          borderRight: '1px solid #132F54',
           transition: 'transform 0.25s ease-in-out',
         }}
         className={`lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Top Header & Tenant Info */}
         <div>
-          {/* App Brand Header */}
+          {/* App Brand Header: White wordmark on navy, clear space equal to shield width */}
           <div
             style={{
               padding: '18px 20px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #1E293B',
+              borderBottom: '1px solid #132F54',
             }}
           >
-            <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+            <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
               <div
                 style={{
-                  width: 34,
-                  height: 34,
+                  width: 36,
+                  height: 36,
                   borderRadius: 8,
-                  background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+                  background: 'rgba(20, 184, 166, 0.15)',
+                  border: '1px solid rgba(20, 184, 166, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 2px 8px rgba(37, 99, 235, 0.4)',
                 }}
               >
-                <ShieldAlert style={{ width: 18, height: 18, color: '#FFFFFF' }} />
+                <ShieldAlert style={{ width: 20, height: 20, color: '#14B8A6' }} />
               </div>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-                  Retain X
+                <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.2, fontFamily: "'Poppins', 'Inter', sans-serif" }}>
+                  Retain <span style={{ color: '#14B8A6' }}>X</span>
                 </div>
-                <div style={{ fontSize: 10.5, fontWeight: 600, color: '#94A3B8', letterSpacing: '0.04em' }}>
-                  ENTERPRISE RETENTION
+                <div style={{ fontSize: 9.5, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  Protect Revenue
                 </div>
               </div>
             </Link>
@@ -122,8 +122,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           <div style={{ padding: '14px 16px 10px' }}>
             <div
               style={{
-                background: '#1E293B',
-                border: '1px solid #334155',
+                background: '#132F54',
+                border: '1px solid #1E3A5F',
                 borderRadius: 8,
                 padding: '8px 12px',
                 display: 'flex',
@@ -132,7 +132,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                <Building2 style={{ width: 15, height: 15, color: '#60A5FA', flexShrink: 0 }} />
+                <Building2 style={{ width: 15, height: 15, color: '#14B8A6', flexShrink: 0 }} />
                 <span
                   style={{
                     fontSize: 12.5,
@@ -150,8 +150,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 style={{
                   fontSize: 10,
                   fontWeight: 800,
-                  background: '#2563EB',
-                  color: '#FFFFFF',
+                  background: '#14B8A6',
+                  color: '#0B1F3A',
                   padding: '2px 6px',
                   borderRadius: 4,
                   textTransform: 'uppercase',
@@ -181,14 +181,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   fontSize: 13,
                   fontWeight: isActive ? 700 : 500,
                   color: isActive ? '#FFFFFF' : '#94A3B8',
-                  background: isActive ? '#1E293B' : 'transparent',
-                  borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
+                  background: isActive ? '#132F54' : 'transparent',
+                  borderLeft: isActive ? '3px solid #14B8A6' : '3px solid transparent',
                   textDecoration: 'none',
                   transition: 'all 0.15s ease',
                 })}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Icon style={{ width: 16, height: 16 }} />
+                  <Icon style={{ width: 16, height: 16, color: '#14B8A6' }} />
                   <span>{label}</span>
                 </div>
               </NavLink>
@@ -197,7 +197,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </div>
 
         {/* Bottom User Profile Section */}
-        <div style={{ padding: 14, borderTop: '1px solid #1E293B', background: '#0B1120' }}>
+        <div style={{ padding: 14, borderTop: '1px solid #132F54', background: '#08172C' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 700, color: '#F8FAFC', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -212,9 +212,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               onClick={logout}
               title="Sign Out of Workspace"
               style={{
-                background: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#F87171',
+                background: 'rgba(220, 38, 38, 0.12)',
+                border: '1px solid rgba(220, 38, 38, 0.3)',
+                color: '#EF4444',
                 padding: '6px 8px',
                 borderRadius: 6,
                 cursor: 'pointer',

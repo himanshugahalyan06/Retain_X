@@ -79,7 +79,7 @@ export default function Header({ onOpenMobile }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5 }}>
           <span style={{ color: '#64748B', fontWeight: 500 }}>{user?.company?.name || 'Acme Corp'}</span>
           <span style={{ color: '#CBD5E1' }}>/</span>
-          <span style={{ color: '#0F172A', fontWeight: 700 }}>{getPageTitle()}</span>
+          <span style={{ color: '#0B1F3A', fontWeight: 700, fontFamily: "'Poppins', 'Inter', sans-serif" }}>{getPageTitle()}</span>
         </div>
       </div>
 
@@ -95,9 +95,9 @@ export default function Header({ onOpenMobile }) {
             borderRadius: 9999,
             fontSize: 11.5,
             fontWeight: 700,
-            background: apiStatus === 'online' ? '#ECFDF5' : '#FEF2F2',
-            border: `1px solid ${apiStatus === 'online' ? '#A7F3D0' : '#FECACA'}`,
-            color: apiStatus === 'online' ? '#065F46' : '#991B1B',
+            background: apiStatus === 'online' ? '#F0FDFA' : '#FEF2F2',
+            border: `1px solid ${apiStatus === 'online' ? '#99F6E4' : '#FECACA'}`,
+            color: apiStatus === 'online' ? '#0F766E' : '#991B1B',
           }}
         >
           <span
@@ -105,7 +105,7 @@ export default function Header({ onOpenMobile }) {
               width: 6,
               height: 6,
               borderRadius: '50%',
-              backgroundColor: apiStatus === 'online' ? '#059669' : '#DC2626',
+              backgroundColor: apiStatus === 'online' ? '#14B8A6' : '#DC2626',
             }}
           />
           <span className="hidden sm:inline">Model Engine</span> {apiStatus === 'online' ? 'Active' : 'Offline'}

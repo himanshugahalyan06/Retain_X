@@ -45,7 +45,7 @@ export default defineConfig({
     target: 'esnext',
     cssCodeSplit: true,
     assetsInlineLimit: 4096,
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -54,9 +54,6 @@ export default defineConfig({
           }
           if (id.includes('node_modules/recharts/')) {
             return 'vendor-charts';
-          }
-          if (id.includes('node_modules/lucide-react/')) {
-            return 'vendor-icons';
           }
           if (id.includes('node_modules/axios/')) {
             return 'vendor-http';

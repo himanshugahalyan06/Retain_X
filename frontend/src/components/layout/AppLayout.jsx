@@ -107,35 +107,35 @@ export default function AppLayout({ children }) {
   const pageInfo = getPageInfo();
 
   return (
-    <div className="min-h-screen bg-[#EBEBEA] flex">
+    <div className="min-h-screen bg-[#F1F5F9] flex">
       {/* ─── MOBILE BACKDROP ───────────────────────────────────────── */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 bg-[#111111]/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-[#0B1F3A]/60 backdrop-blur-sm z-40 lg:hidden"
         />
       )}
 
-      {/* ─── SIDEBAR CONTAINER ─────────────────────────────────────── */}
+      {/* ─── SIDEBAR CONTAINER (Guard Navy) ─────────────────────────── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 bg-[#111111] text-[#FFFFFF] border-r border-[#262626] transition-all duration-300 flex flex-col justify-between ${
+        className={`fixed top-0 bottom-0 left-0 z-50 bg-[#0B1F3A] text-[#FFFFFF] border-r border-[#132F54] transition-all duration-300 flex flex-col justify-between ${
           collapsed ? 'w-18' : 'w-64'
         } ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div>
-          {/* Brand Header */}
-          <div className="h-16 px-4 border-b border-[#262626] flex items-center justify-between">
-            <Link to="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-8 h-8 rounded-lg bg-[#202020] border border-[#333333] flex items-center justify-center text-[#5FB57A] shrink-0">
+          {/* Brand Header: White wordmark on navy with shield clear space */}
+          <div className="h-16 px-4 border-b border-[#132F54] flex items-center justify-between">
+            <Link to="/dashboard" className="flex items-center gap-3 overflow-hidden">
+              <div className="w-8 h-8 rounded-lg bg-[#14B8A6]/15 border border-[#14B8A6]/30 flex items-center justify-center text-[#14B8A6] shrink-0">
                 <ShieldAlert className="w-4 h-4" />
               </div>
               {!collapsed && (
                 <div className="truncate">
-                  <div className="font-display text-sm tracking-tight text-white leading-none">
-                    RETAIN<span className="text-[#5FB57A]">X</span>
+                  <div className="font-heading text-sm font-bold tracking-tight text-white leading-none">
+                    RETAIN<span className="text-[#14B8A6]">X</span>
                   </div>
-                  <div className="text-[10px] font-bold text-[#8E8E8A] uppercase tracking-wider mt-0.5">
-                    Enterprise SaaS
+                  <div className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mt-0.5">
+                    Protect Revenue
                   </div>
                 </div>
               )}
@@ -144,7 +144,7 @@ export default function AppLayout({ children }) {
             {/* Mobile Close Button */}
             <button
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden text-[#8E8E8A] hover:text-white p-1"
+              className="lg:hidden text-[#94A3B8] hover:text-white p-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -152,9 +152,9 @@ export default function AppLayout({ children }) {
 
           {/* Tenant Pill */}
           <div className="p-3">
-            <div className={`p-2.5 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A] flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
+            <div className={`p-2.5 rounded-xl bg-[#132F54] border border-[#1E3A5F] flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
               <div className="flex items-center gap-2 truncate">
-                <Building2 className="w-4 h-4 text-[#5FB57A] shrink-0" />
+                <Building2 className="w-4 h-4 text-[#14B8A6] shrink-0" />
                 {!collapsed && (
                   <span className="text-xs font-bold text-white truncate">
                     {companyName}
@@ -162,7 +162,7 @@ export default function AppLayout({ children }) {
                 )}
               </div>
               {!collapsed && (
-                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[#5FB57A] text-[#111111] uppercase font-mono">
+                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[#14B8A6] text-[#0B1F3A] uppercase font-mono">
                   {role}
                 </span>
               )}
@@ -174,7 +174,7 @@ export default function AppLayout({ children }) {
             {NAV_GROUPS.map((group) => (
               <div key={group.title} className="space-y-1">
                 {!collapsed && (
-                  <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#8E8E8A]">
+                  <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#94A3B8]">
                     {group.title}
                   </div>
                 )}
@@ -185,13 +185,13 @@ export default function AppLayout({ children }) {
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                         isActive
-                          ? 'bg-[#202020] text-white border-l-2 border-[#5FB57A] shadow-sm'
-                          : 'text-[#8E8E8A] hover:text-white hover:bg-[#1A1A1A]'
+                          ? 'bg-[#132F54] text-white border-l-2 border-[#14B8A6] shadow-sm'
+                          : 'text-[#94A3B8] hover:text-white hover:bg-[#0F284A]'
                       } ${collapsed ? 'justify-center px-0' : ''}`
                     }
                     title={collapsed ? label : undefined}
                   >
-                    <Icon className="w-4 h-4 shrink-0 text-[#5FB57A]" />
+                    <Icon className="w-4 h-4 shrink-0 text-[#14B8A6]" />
                     {!collapsed && <span>{label}</span>}
                   </NavLink>
                 ))}
@@ -201,14 +201,14 @@ export default function AppLayout({ children }) {
         </div>
 
         {/* Bottom Sidebar Footer */}
-        <div className="p-3 border-t border-[#262626] bg-[#0E0E0E]">
+        <div className="p-3 border-t border-[#132F54] bg-[#08172C]">
           <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
             {!collapsed && (
               <div className="truncate mr-2">
                 <div className="text-xs font-bold text-white truncate">
                   {user?.full_name || user?.email?.split('@')[0] || 'User'}
                 </div>
-                <div className="text-[10.5px] text-[#8E8E8A] truncate">
+                <div className="text-[10.5px] text-[#94A3B8] truncate">
                   {user?.email}
                 </div>
               </div>
@@ -217,7 +217,7 @@ export default function AppLayout({ children }) {
             <button
               onClick={logout}
               title="Sign Out"
-              className="p-2 rounded-lg bg-[#1A1A1A] hover:bg-red-950/40 text-[#8E8E8A] hover:text-red-400 border border-[#2A2A2A] hover:border-red-800/50 transition-colors"
+              className="p-2 rounded-lg bg-[#132F54] hover:bg-red-950/40 text-[#94A3B8] hover:text-red-400 border border-[#1E3A5F] hover:border-red-800/50 transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>
@@ -232,12 +232,12 @@ export default function AppLayout({ children }) {
         }`}
       >
         {/* Top Header Navbar */}
-        <header className="h-16 bg-white border-b border-[#D8D8D5] sticky top-0 z-30 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <header className="h-16 bg-white border-b border-[#E2E8F0] sticky top-0 z-30 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Left: Mobile Toggle, Desktop Collapse & Breadcrumbs */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden p-2 rounded-lg border border-[#D8D8D5] text-[#111111]"
+              className="lg:hidden p-2 rounded-lg border border-[#E2E8F0] text-[#0B1F3A]"
               aria-label="Open navigation"
             >
               <Menu className="w-4 h-4" />
@@ -245,7 +245,7 @@ export default function AppLayout({ children }) {
 
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex p-1.5 rounded-lg border border-[#D8D8D5] text-[#656565] hover:text-[#111111] hover:bg-[#F3F3F1] transition-colors"
+              className="hidden lg:flex p-1.5 rounded-lg border border-[#E2E8F0] text-[#64748B] hover:text-[#0B1F3A] hover:bg-[#F1F5F9] transition-colors"
               title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -253,21 +253,21 @@ export default function AppLayout({ children }) {
 
             {/* Breadcrumb Trail */}
             <div className="flex items-center gap-2 text-xs font-semibold">
-              <span className="text-[#656565] hidden sm:inline">{companyName}</span>
-              <span className="text-[#D8D8D5] hidden sm:inline">/</span>
-              <span className="text-[#656565] hidden md:inline">{pageInfo.section}</span>
-              <span className="text-[#D8D8D5] hidden md:inline">/</span>
-              <span className="text-[#111111] font-bold">{pageInfo.title}</span>
+              <span className="text-[#64748B] hidden sm:inline">{companyName}</span>
+              <span className="text-[#CBD5E1] hidden sm:inline">/</span>
+              <span className="text-[#64748B] hidden md:inline">{pageInfo.section}</span>
+              <span className="text-[#CBD5E1] hidden md:inline">/</span>
+              <span className="text-[#0B1F3A] font-bold">{pageInfo.title}</span>
             </div>
           </div>
 
           {/* Right: Engine Status, Actions & User Dropdown */}
           <div className="flex items-center gap-3">
             {/* Engine Status Pill */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border border-[#D8D8D5] bg-[#F3F3F1] text-[#111111]">
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border border-[#E2E8F0] bg-[#F1F5F9] text-[#0B1F3A]">
               <span
                 className={`w-2 h-2 rounded-full ${
-                  apiStatus === 'online' ? 'bg-[#5FB57A] animate-pulse' : 'bg-red-500'
+                  apiStatus === 'online' ? 'bg-[#14B8A6] animate-pulse' : 'bg-red-500'
                 }`}
               />
               <span className="text-[11px] font-mono">
@@ -279,15 +279,15 @@ export default function AppLayout({ children }) {
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 p-1.5 rounded-xl border border-[#D8D8D5] hover:bg-[#F3F3F1] transition-colors"
+                className="flex items-center gap-2 p-1.5 rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] transition-colors"
               >
-                <div className="w-7 h-7 rounded-lg bg-[#111111] text-[#5FB57A] font-bold text-xs flex items-center justify-center font-display">
+                <div className="w-7 h-7 rounded-lg bg-[#0B1F3A] text-[#14B8A6] font-bold text-xs flex items-center justify-center font-heading">
                   {user?.full_name?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
-                <span className="text-xs font-bold text-[#111111] hidden md:inline max-w-[120px] truncate">
+                <span className="text-xs font-bold text-[#0B1F3A] hidden md:inline max-w-[120px] truncate">
                   {user?.full_name || user?.email}
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-[#656565]" />
+                <ChevronDown className="w-3.5 h-3.5 text-[#64748B]" />
               </button>
 
               {userMenuOpen && (

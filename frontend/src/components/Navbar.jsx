@@ -41,9 +41,9 @@ export default function Navbar() {
   }, []);
 
   const statusConfig = {
-    online:   { dot: '#5FB57A', text: 'Live',     bg: 'rgba(95,181,122,0.15)', border: 'rgba(95,181,122,0.3)', color: '#111111' },
-    offline:  { dot: '#EF4444', text: 'Offline',  bg: 'rgba(239,68,68,0.12)', border: '#FECACA', color: '#EF4444' },
-    checking: { dot: '#F59E0B', text: 'Checking', bg: 'rgba(245,158,11,0.15)', border: '#FDE68A', color: '#D97706' },
+    online:   { dot: '#14B8A6', text: 'Live',     bg: 'rgba(20, 184, 166, 0.12)', border: 'rgba(20, 184, 166, 0.25)', color: '#0B1F3A' },
+    offline:  { dot: '#DC2626', text: 'Offline',  bg: 'rgba(220, 38, 38, 0.12)', border: '#FECACA', color: '#DC2626' },
+    checking: { dot: '#F59E0B', text: 'Checking', bg: 'rgba(245, 158, 11, 0.15)', border: '#FDE68A', color: '#B45309' },
   };
   const status = statusConfig[apiStatus];
 
@@ -55,31 +55,31 @@ export default function Navbar() {
           top: 0, left: 0, right: 0,
           zIndex: 50,
           transition: 'all 0.25s ease',
-          background: scrolled ? 'rgba(235, 235, 234, 0.95)' : 'rgba(235, 235, 234, 0.88)',
+          background: scrolled ? 'rgba(241, 245, 249, 0.95)' : 'rgba(241, 245, 249, 0.88)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid #D8D8D5',
-          boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.04)' : 'none',
+          borderBottom: '1px solid #E2E8F0',
+          boxShadow: scrolled ? '0 4px 20px rgba(11, 31, 58, 0.04)' : 'none',
         }}
       >
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
 
-            {/* Logo */}
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+            {/* Logo: Navy wordmark on light background, clear space equal to shield width */}
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
               <div
                 style={{
                   width: 36, height: 36,
-                  borderRadius: 10,
-                  background: '#111111',
+                  borderRadius: 8,
+                  background: '#0B1F3A',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                <ShieldAlert style={{ width: 18, height: 18, color: '#5FB57A' }} />
+                <ShieldAlert style={{ width: 20, height: 20, color: '#14B8A6' }} />
               </div>
-              <span className="font-display" style={{ fontSize: 18, fontWeight: 900, color: '#111111', letterSpacing: '-0.02em' }}>
+              <span className="font-heading" style={{ fontSize: 19, fontWeight: 800, color: '#0B1F3A', letterSpacing: '-0.02em' }}>
                 Retain
-                <span style={{ color: '#5FB57A', marginLeft: 4, fontWeight: 900 }}>X</span>
+                <span style={{ color: '#14B8A6', marginLeft: 3 }}>X</span>
               </span>
             </Link>
 
@@ -96,17 +96,17 @@ export default function Navbar() {
                       alignItems: 'center',
                       gap: 7,
                       padding: '8px 16px',
-                      borderRadius: 10,
+                      borderRadius: 8,
                       fontSize: 13.5,
                       fontWeight: 700,
                       textDecoration: 'none',
                       transition: 'all 0.2s ease',
-                      background: isActive ? '#111111' : 'transparent',
-                      color: isActive ? '#FFFFFF' : '#656565',
-                      border: isActive ? '1px solid #111111' : '1px solid transparent',
+                      background: isActive ? '#0B1F3A' : 'transparent',
+                      color: isActive ? '#FFFFFF' : '#475569',
+                      border: isActive ? '1px solid #0B1F3A' : '1px solid transparent',
                     })}
                   >
-                    <Icon style={{ width: 15, height: 15, color: '#5FB57A' }} />
+                    <Icon style={{ width: 15, height: 15, color: '#14B8A6' }} />
                     {label}
                   </NavLink>
                 ))}

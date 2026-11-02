@@ -29,9 +29,9 @@ const DataModelStudioPage = lazy(() => import('./pages/DataModelStudioPage'));
 function PageLoader() {
   return (
     <div className="min-h-[50vh] flex flex-col items-center justify-center">
-      <div className="p-6 bg-white border border-[#D8D8D5] rounded-2xl shadow-sm text-center space-y-2">
-        <Loader2 className="w-7 h-7 animate-spin text-[#5FB57A] mx-auto" />
-        <p className="text-xs font-bold text-[#111111] uppercase tracking-wider">
+      <div className="p-6 bg-white border border-[#E2E8F0] rounded-2xl shadow-sm text-center space-y-2">
+        <Loader2 className="w-7 h-7 animate-spin text-[#14B8A6] mx-auto" />
+        <p className="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider font-heading">
           Loading View...
         </p>
       </div>
@@ -42,12 +42,12 @@ function PageLoader() {
 function NotFoundPage() {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-      <div className="font-display text-7xl text-[#D8D8D5] mb-2">404</div>
-      <h1 className="text-xl font-black text-[#111111] mb-2 font-display">Page Not Found</h1>
-      <p className="text-xs text-[#656565] mb-6 max-w-sm">
+      <div className="font-heading font-black text-7xl text-[#CBD5E1] mb-2 font-mono">404</div>
+      <h1 className="text-xl font-bold text-[#0B1F3A] mb-2 font-heading">Page Not Found</h1>
+      <p className="text-xs text-[#64748B] mb-6 max-w-sm">
         The workspace path you requested does not exist or has been relocated.
       </p>
-      <Link to="/dashboard" className="btn-ink text-xs py-2.5 px-5">
+      <Link to="/dashboard" className="btn-navy text-xs py-2.5 px-5">
         Return to Dashboard
       </Link>
     </div>

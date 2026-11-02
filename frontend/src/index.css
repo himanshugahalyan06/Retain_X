@@ -1,55 +1,61 @@
 @import "tailwindcss";
 
-/* ── Retain X Enterprise Design System Tokens ── */
+/* ── Retain X Enterprise Design System Tokens (Brand Guidelines v1) ── */
 :root {
+  /* Brand Guidelines Core Palette */
+  --brand-navy: #0B1F3A;        /* Guard Navy: Primary / headings */
+  --brand-teal: #14B8A6;        /* Retain Teal: Accent / CTAs */
+  --brand-amber: #F59E0B;       /* Alert Amber: Highlights / warnings */
+  --brand-cloud: #F1F5F9;       /* Cloud: Backgrounds */
+
   /* Paper / Canvas & Workspace Surfaces */
-  --bg-paper: #EBEBEA;          /* Warm Paper Canvas */
-  --bg-canvas: #EBEBEA;         /* Primary App Background */
+  --bg-paper: #F1F5F9;          /* Cloud Canvas */
+  --bg-canvas: #F1F5F9;         /* Cloud App Background */
   --bg-card: #FFFFFF;           /* Crisp White Surface */
-  --bg-card-alt: #F3F3F1;       /* Secondary Muted Surface */
-  --bg-muted: #F3F3F1;          /* Muted Surface */
-  --bg-sidebar: #111111;        /* Deep Ink Chrome */
-  --bg-sidebar-active: #202020; /* Dark Active Nav */
-  --bg-sidebar-hover: #1A1A1A;  /* Dark Hover Nav */
+  --bg-card-alt: #F8FAFC;       /* Light Slate Surface */
+  --bg-muted: #E2E8F0;          /* Muted Surface */
+  --bg-sidebar: #0B1F3A;        /* Guard Navy Chrome */
+  --bg-sidebar-active: #132F54; /* Navy Active Nav */
+  --bg-sidebar-hover: #0F284A;  /* Navy Hover Nav */
 
   /* Borders & Dividers */
-  --border-color: #D8D8D5;      /* Base Border */
-  --border-subtle: #E5E5E2;     /* Subtle Divider */
-  --border-sidebar: #262626;    /* Dark Sidebar Border */
+  --border-color: #E2E8F0;      /* Base Slate Border */
+  --border-subtle: #EDF2F7;     /* Subtle Divider */
+  --border-sidebar: #1E3A5F;    /* Navy Sidebar Border */
 
-  /* Primary Brand Accent */
-  --brand-primary: #5FB57A;     /* Retain X Accent Green */
-  --brand-hover: #4FA268;       /* Darker Accent Green */
-  --brand-subtle: #EBF7EF;      /* Light Accent Green Tint */
-  --brand-border: #A6DCB8;      /* Light Green Border */
+  /* Primary Brand Accent (Retain Teal) */
+  --brand-primary: #14B8A6;     /* Retain Teal */
+  --brand-hover: #0D9488;       /* Deeper Teal */
+  --brand-subtle: #F0FDFA;      /* Subtle Teal Tint */
+  --brand-border: #99F6E4;      /* Light Teal Border */
 
   /* Semantic Status Tokens */
-  --color-success: #5FB57A;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
-  --color-info: #3B82F6;
+  --color-success: #14B8A6;     /* Retain Teal */
+  --color-warning: #F59E0B;     /* Alert Amber */
+  --color-danger: #DC2626;      /* High Risk Red */
+  --color-info: #0284C7;
 
-  /* Risk Indicator Tokens */
+  /* Product Risk Indicators (Brand Guidelines) */
   --risk-high-bg: #FEF2F2;
   --risk-high-border: #FECACA;
   --risk-high-text: #991B1B;
-  --risk-high-dot: #DC2626;
+  --risk-high-dot: #DC2626;     /* High Risk = Red */
 
   --risk-med-bg: #FFFBEB;
   --risk-med-border: #FDE68A;
   --risk-med-text: #92400E;
-  --risk-med-dot: #D97706;
+  --risk-med-dot: #F59E0B;      /* Medium Risk = Amber */
 
-  --risk-low-bg: #EBF7EF;
-  --risk-low-border: #A6DCB8;
-  --risk-low-text: #1B5E34;
-  --risk-low-dot: #5FB57A;
+  --risk-low-bg: #F0FDFA;
+  --risk-low-border: #99F6E4;
+  --risk-low-text: #0F766E;
+  --risk-low-dot: #14B8A6;      /* Low Risk = Teal / Green */
 
   /* Typography */
-  --text-primary: #111111;      /* Deep Ink */
-  --text-ink: #111111;
-  --text-secondary: #656565;    /* Secondary Text */
-  --text-muted: #8E8E8A;        /* Muted Text */
+  --text-primary: #0B1F3A;      /* Guard Navy (Primary / Headings) */
+  --text-ink: #0B1F3A;
+  --text-secondary: #475569;    /* Slate-600 */
+  --text-muted: #64748B;        /* Slate-500 */
   --text-inverse: #FFFFFF;      /* Clean White */
 
   /* Radii */
@@ -58,9 +64,11 @@
   --radius-lg: 16px;
   --radius-pill: 9999px;
 
-  /* Fonts */
+  /* Brand Typography: Headings: Inter Bold / Poppins SemiBold, Body: Inter Regular, Numbers/Code: JetBrains Mono */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Archivo Black', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @layer base {
@@ -91,19 +99,20 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #EBEBEA;
+    background: #F1F5F9;
   }
   ::-webkit-scrollbar-thumb {
-    background: #D8D8D5;
+    background: #CBD5E1;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #B8B8B5;
+    background: #94A3B8;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: var(--text-primary);
-    letter-spacing: -0.02em;
+    color: var(--brand-navy);
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em;
     font-weight: 700;
   }
 }
@@ -112,8 +121,17 @@
   font-family: var(--font-display);
 }
 
+.font-heading {
+  font-family: var(--font-heading);
+}
+
 .font-sans {
   font-family: var(--font-sans);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── B2B Card & Container Utilities ── */
@@ -121,7 +139,7 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  box-shadow: 0 1px 3px 0 rgba(17, 17, 17, 0.04), 0 1px 2px -1px rgba(17, 17, 17, 0.03);
+  box-shadow: 0 1px 3px 0 rgba(11, 31, 58, 0.04), 0 1px 2px -1px rgba(11, 31, 58, 0.02);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -143,21 +161,22 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--brand-primary);
-  color: #111111;
+  background-color: var(--brand-teal);
+  color: #FFFFFF;
   font-weight: 700;
   font-size: 13.5px;
   padding: 9px 18px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--brand-primary);
+  border: 1px solid var(--brand-teal);
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgba(11, 31, 58, 0.08);
 }
 .btn-primary:hover {
   background-color: var(--brand-hover);
   border-color: var(--brand-hover);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px 0 rgba(20, 184, 166, 0.25);
 }
 .btn-primary:disabled {
   opacity: 0.6;
@@ -179,32 +198,34 @@
   border: 1px solid var(--border-color);
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 2px 0 rgba(11, 31, 58, 0.02);
 }
 .btn-secondary:hover {
   background-color: var(--bg-card-alt);
-  border-color: #C0C0BD;
-  color: #111111;
+  border-color: #CBD5E1;
+  color: var(--brand-navy);
 }
 
+.btn-navy,
 .btn-ink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: #111111;
+  background-color: var(--brand-navy);
   color: #FFFFFF;
   font-weight: 700;
   font-size: 13.5px;
   padding: 9px 18px;
   border-radius: var(--radius-sm);
-  border: 1px solid #111111;
+  border: 1px solid var(--brand-navy);
   cursor: pointer;
   transition: all 0.15s ease;
 }
+.btn-navy:hover,
 .btn-ink:hover {
-  background-color: #242424;
-  border-color: #242424;
+  background-color: #132F54;
+  border-color: #132F54;
   transform: translateY(-1px);
 }
 
